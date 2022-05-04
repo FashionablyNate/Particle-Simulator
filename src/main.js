@@ -36,7 +36,7 @@ function main() {
     const deltaTime = now - then;
     then = now;
 
-    drawScene(gl, shaderProgram, buffers, deltaTime);
+    drawScene(gl, shaderProgram, buffers, sr, deltaTime);
 
     requestAnimationFrame(render);
   }
@@ -46,7 +46,7 @@ function main() {
 //
 // Draw the scene.
 //
-function drawScene(gl, shaderProgram, buffers, deltaTime) {
+function drawScene(gl, shaderProgram, buffers, sr, dt) {
   gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
   gl.clearDepth(1.0);                 // Clear everything
   gl.enable(gl.DEPTH_TEST);           // Enable depth testing
@@ -56,66 +56,20 @@ function drawScene(gl, shaderProgram, buffers, deltaTime) {
 
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  const projectionMatrix = mat4.create();
+  height += dt * 30
+  
+  sr.drawSprite(gl,
+                shaderProgram,
+                buffers,
+                vec2.fromValues(100, height),
+                vec2.fromValues(10, 10), 
+                vec3.fromValues(1.0, 1.0, 1.0));
 
-  // note: glmatrix.js always has the first argument
-  // as the destination to receive the result.
-  mat4.ortho(projectionMatrix, 0.0, 640, 480, 0.0, -1.0, 1.0);
+  sr.drawSprite(gl,
+                shaderProgram,
+                buffers,
+                vec2.fromValues(200, height),
+                vec2.fromValues(10, 10), 
+                vec3.fromValues(1.0, 1.0, 1.0));
 
-  // Set the drawing position to the "identity" point, which is
-  // the center of the scene.
-  const modelViewMatrix = mat4.create();
-
-  // Now move the drawing position a bit to where we want to
-  // start drawing the square.
-
-  height += deltaTime * 30;
-
-  mat4.translate(modelViewMatrix,
-                 modelViewMatrix,
-                 vec3.fromValues(100, height, 0));
-
-  mat4.scale(modelViewMatrix,
-             modelViewMatrix,
-             vec3.fromValues(-0.5 * 5, -0.5 * 5, 0));
-
-  // Tell WebGL how to pull out the positions from the position
-  // buffer into the vertexPosition attribute.
-  {
-    const numComponents = 2;
-    const type = gl.FLOAT;
-    const normalize = false;
-    const stride = 0;
-    const offset = 0;
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
-    gl.vertexAttribPointer(
-        shaderProgram.attribLocations.vertexPosition,
-        numComponents,
-        type,
-        normalize,
-        stride,
-        offset);
-    gl.enableVertexAttribArray(
-        shaderProgram.attribLocations.vertexPosition);
-  }
-
-  // Tell WebGL to use our program when drawing
-  gl.useProgram(shaderProgram.program);
-
-  // Set the shader uniforms
-
-  gl.uniformMatrix4fv(
-      shaderProgram.uniformLocations.projectionMatrix,
-      false,
-      projectionMatrix);
-  gl.uniformMatrix4fv(
-      shaderProgram.uniformLocations.modelViewMatrix,
-      false,
-      modelViewMatrix);
-
-  {
-    const offset = 0;
-    const vertexCount = 4;
-    gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
-  }
 }
