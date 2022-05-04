@@ -1,6 +1,6 @@
 main();
 
-import * as rm from './resourceManager.js';
+import * as resMan from './resourceManager.js';
 
 //
 // Start here
@@ -8,7 +8,7 @@ import * as rm from './resourceManager.js';
 function main() {
   const canvas = document.querySelector('#glcanvas');
   const gl = canvas.getContext('webgl');
-  let resourceManager = new rm.ResourceManager();
+  let rm = new resMan.ResourceManager();
 
   // If we don't have a GL context, give up now
 
@@ -19,28 +19,26 @@ function main() {
 
   // Vertex shader program
 
-  const vsSource = `
-    attribute vec4 aVertexPosition;
+  rm.loadShader(gl, gl.VERTEX_SHADER,
+    `attribute vec4 aVertexPosition;
 
     uniform mat4 uModelViewMatrix;
     uniform mat4 uProjectionMatrix;
 
     void main() {
       gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
-    }
-  `;
+    }`, 'vShader');
 
   // Fragment shader program
 
-  const fsSource = `
-    void main() {
-      gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
-    }
-  `;
+  rm.loadShader(gl, gl.FRAGMENT_SHADER, 
+    `void main() {
+        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+    }`, 'fShader');
 
   // Initialize a shader program; this is where all the lighting
   // for the vertices and so forth is established.
-  const shaderProgram = initShaderProgram(gl, vsSource, fsSource, resourceManager);
+  const shaderProgram = initShaderProgram(gl, rm);
 
   // Collect all the info needed to use the shader program.
   // Look up which attribute our shader program is using
@@ -116,26 +114,11 @@ function drawScene(gl, programInfo, buffers) {
 
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  // Create a perspective matrix, a special matrix that is
-  // used to simulate the distortion of perspective in a camera.
-  // Our field of view is 45 degrees, with a width/height
-  // ratio that matches the display size of the canvas
-  // and we only want to see objects between 0.1 units
-  // and 100 units away from the camera.
-
-  const fieldOfView = 45 * Math.PI / 180;   // in radians
-  const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
-  const zNear = 0.1;
-  const zFar = 100.0;
   const projectionMatrix = mat4.create();
 
   // note: glmatrix.js always has the first argument
   // as the destination to receive the result.
-  mat4.perspective(projectionMatrix,
-                   fieldOfView,
-                   aspect,
-                   zNear,
-                   zFar);
+  mat4.ortho(projectionMatrix, 0.0, 640, 480, 0.0, -1.0, 1.0);
 
   // Set the drawing position to the "identity" point, which is
   // the center of the scene.
@@ -144,9 +127,7 @@ function drawScene(gl, programInfo, buffers) {
   // Now move the drawing position a bit to where we want to
   // start drawing the square.
 
-  mat4.translate(modelViewMatrix,     // destination matrix
-                 modelViewMatrix,     // matrix to translate
-                 [-0.0, 0.0, -6.0]);  // amount to translate
+  mat4.translate(modelViewMatrix, modelViewMatrix, vec3.fromValues(100, 100, 0))
 
   // Tell WebGL how to pull out the positions from the position
   // buffer into the vertexPosition attribute.
@@ -193,15 +174,12 @@ function drawScene(gl, programInfo, buffers) {
 //
 // Initialize a shader program, so WebGL knows how to draw our data
 //
-function initShaderProgram(gl, vsSource, fsSource, resourceManager) {
-  const vertexShader = resourceManager.loadShader(gl, gl.VERTEX_SHADER, vsSource);
-  const fragmentShader = resourceManager.loadShader(gl, gl.FRAGMENT_SHADER, fsSource);
+function initShaderProgram(gl, rm) {
 
   // Create the shader program
-
   const shaderProgram = gl.createProgram();
-  gl.attachShader(shaderProgram, vertexShader);
-  gl.attachShader(shaderProgram, fragmentShader);
+  gl.attachShader(shaderProgram, rm.getShader('vShader'));
+  gl.attachShader(shaderProgram, rm.getShader('fShader'));
   gl.linkProgram(shaderProgram);
 
   // If creating the shader program failed, alert
