@@ -1,3 +1,5 @@
 {
-    "resourceManager": "module"
+    "resourceManager": "module",
+    "spriteRenderer": "module",
+    "shaderSource": "module"
 }
