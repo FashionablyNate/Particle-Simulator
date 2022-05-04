@@ -1,8 +1,7 @@
 export class SpriteRenderer {
 
-    constructor(program, gl) {
+    constructor(program) {
         this.program = program;
-        this.initBufferData(gl);
     }
 
     initBufferData(gl) {
@@ -27,23 +26,11 @@ export class SpriteRenderer {
         // JavaScript array, then use it to fill the current buffer.
 
         gl.bufferData(gl.ARRAY_BUFFER,
-        new Float32Array(positions),
-        gl.STATIC_DRAW);
+                      new Float32Array(positions),
+                      gl.STATIC_DRAW);
 
-        const numComponents = 2;
-        const type = gl.FLOAT;
-        const normalize = false;
-        const stride = 0;
-        const offset = 0;
-        gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
-        gl.vertexAttribPointer(
-            shaderProgram.attribLocations.vertexPosition,
-            numComponents,
-            type,
-            normalize,
-            stride,
-            offset);
-        gl.enableVertexAttribArray(
-            shaderProgram.attribLocations.vertexPosition);
+        return {
+            position: positionBuffer,
+        };
     }
 }

@@ -28,8 +28,8 @@ export class ResourceManager {
     loadProgram(gl, vsName, fsName, name) {
         const shaderProgram = gl.createProgram();
 
-        const vShader = getShader('vsName');
-        const fShader = getShader('fsName');
+        const vShader = this.shaders.get(vsName);
+        const fShader = this.shaders.get(fsName);
 
         gl.attachShader(shaderProgram, vShader);
         gl.attachShader(shaderProgram, fShader);

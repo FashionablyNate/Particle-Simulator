@@ -25,7 +25,8 @@ function main() {
   rm.loadShader(gl, gl.FRAGMENT_SHADER, fsSource, 'fShader');
   // link the program with the compiled shaders by providing their key names
   const shaderProgram = rm.loadProgram(gl, 'vShader', 'fShader', 'shaderProgram');
-  let sr = new sprRen.SpriteRenderer(shaderProgram, gl);
+  let sr = new sprRen.SpriteRenderer(shaderProgram);
+  const buffers = sr.initBufferData(gl)
 
   var then = 0;
 
@@ -35,7 +36,7 @@ function main() {
     const deltaTime = now - then;
     then = now;
 
-    drawScene(gl, shaderProgram, deltaTime);
+    drawScene(gl, shaderProgram, buffers, deltaTime);
 
     requestAnimationFrame(render);
   }
@@ -45,7 +46,7 @@ function main() {
 //
 // Draw the scene.
 //
-function drawScene(gl, shaderProgram, deltaTime) {
+function drawScene(gl, shaderProgram, buffers, deltaTime) {
   gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
   gl.clearDepth(1.0);                 // Clear everything
   gl.enable(gl.DEPTH_TEST);           // Enable depth testing
@@ -78,8 +79,27 @@ function drawScene(gl, shaderProgram, deltaTime) {
              modelViewMatrix,
              vec3.fromValues(-0.5 * 5, -0.5 * 5, 0));
 
-  // Tell WebGL to use our program when drawing
+  // Tell WebGL how to pull out the positions from the position
+  // buffer into the vertexPosition attribute.
+  {
+    const numComponents = 2;
+    const type = gl.FLOAT;
+    const normalize = false;
+    const stride = 0;
+    const offset = 0;
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
+    gl.vertexAttribPointer(
+        shaderProgram.attribLocations.vertexPosition,
+        numComponents,
+        type,
+        normalize,
+        stride,
+        offset);
+    gl.enableVertexAttribArray(
+        shaderProgram.attribLocations.vertexPosition);
+  }
 
+  // Tell WebGL to use our program when drawing
   gl.useProgram(shaderProgram.program);
 
   // Set the shader uniforms
