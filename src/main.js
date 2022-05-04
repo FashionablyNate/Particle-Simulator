@@ -4,7 +4,8 @@ import * as resMan from './resourceManager.js';
 import * as sprRen from './spriteRenderer.js';
 import { vsSource, fsSource } from './shaderSource.js';
 
-let height = 100;
+let yPos = 100;
+let xPos = 100;
 
 //
 // Start here
@@ -30,6 +31,16 @@ function main() {
 
   var then = 0;
 
+  // Register function (event handler) to be called on a mouse press
+  canvas.onmousedown = function(ev){ click(ev, gl, canvas) };
+
+  const myWorld = new ApeECS.World({
+    trackChanges: true,
+    entityPool: 10,
+    cleanupPools: true,
+    useApeDestroy: true
+  });
+
   // Draw the scene repeatedly
   function render(now) {
     now *= 0.001;  // convert to seconds
@@ -41,6 +52,11 @@ function main() {
     requestAnimationFrame(render);
   }
   requestAnimationFrame(render);
+}
+
+function click(ev) {
+  xPos = ev.clientX;
+  yPos = ev.clientY;
 }
 
 //
@@ -56,19 +72,12 @@ function drawScene(gl, shaderProgram, buffers, sr, dt) {
 
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  height += dt * 30
+  yPos = (yPos < 490) ? yPos + dt * 100 : 490;
   
   sr.drawSprite(gl,
                 shaderProgram,
                 buffers,
-                vec2.fromValues(100, height),
-                vec2.fromValues(10, 10), 
-                vec3.fromValues(1.0, 1.0, 1.0));
-
-  sr.drawSprite(gl,
-                shaderProgram,
-                buffers,
-                vec2.fromValues(200, height),
+                vec2.fromValues(xPos - 10, yPos - 15),
                 vec2.fromValues(10, 10), 
                 vec3.fromValues(1.0, 1.0, 1.0));
 

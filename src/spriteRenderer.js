@@ -58,21 +58,21 @@ export class SpriteRenderer {
         // Tell WebGL how to pull out the positions from the position
         // buffer into the vertexPosition attribute.
         {
-        const numComponents = 2;
-        const type = gl.FLOAT;
-        const normalize = false;
-        const stride = 0;
-        const offset = 0;
-        gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
-        gl.vertexAttribPointer(
-        shaderProgram.attribLocations.vertexPosition,
-        numComponents,
-        type,
-        normalize,
-        stride,
-        offset);
-        gl.enableVertexAttribArray(
-        shaderProgram.attribLocations.vertexPosition);
+            const numComponents = 2;
+            const type = gl.FLOAT;
+            const normalize = false;
+            const stride = 0;
+            const offset = 0;
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
+            gl.vertexAttribPointer(
+            shaderProgram.attribLocations.vertexPosition,
+            numComponents,
+            type,
+            normalize,
+            stride,
+            offset);
+            gl.enableVertexAttribArray(
+            shaderProgram.attribLocations.vertexPosition);
         }
 
         // Tell WebGL to use our program when drawing
