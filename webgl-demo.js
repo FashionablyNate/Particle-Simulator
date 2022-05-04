@@ -2,6 +2,8 @@ main();
 
 import * as resMan from './resourceManager.js';
 
+let height = 100;
+
 //
 // Start here
 //
@@ -58,8 +60,19 @@ function main() {
   // objects we'll be drawing.
   const buffers = initBuffers(gl);
 
-  // Draw the scene
-  drawScene(gl, programInfo, buffers);
+  var then = 0;
+
+  // Draw the scene repeatedly
+  function render(now) {
+    now *= 0.001;  // convert to seconds
+    const deltaTime = now - then;
+    then = now;
+
+    drawScene(gl, programInfo, buffers, deltaTime);
+
+    requestAnimationFrame(render);
+  }
+  requestAnimationFrame(render);
 }
 
 //
@@ -104,7 +117,7 @@ function initBuffers(gl) {
 //
 // Draw the scene.
 //
-function drawScene(gl, programInfo, buffers) {
+function drawScene(gl, programInfo, buffers, deltaTime) {
   gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
   gl.clearDepth(1.0);                 // Clear everything
   gl.enable(gl.DEPTH_TEST);           // Enable depth testing
@@ -127,7 +140,15 @@ function drawScene(gl, programInfo, buffers) {
   // Now move the drawing position a bit to where we want to
   // start drawing the square.
 
-  mat4.translate(modelViewMatrix, modelViewMatrix, vec3.fromValues(100, 100, 0))
+  height += deltaTime * 30;
+
+  mat4.translate(modelViewMatrix,
+                 modelViewMatrix,
+                 vec3.fromValues(100, height, 0));
+
+  mat4.scale(modelViewMatrix,
+             modelViewMatrix,
+             vec3.fromValues(-0.5 * 5, -0.5 * 5, 0));
 
   // Tell WebGL how to pull out the positions from the position
   // buffer into the vertexPosition attribute.
