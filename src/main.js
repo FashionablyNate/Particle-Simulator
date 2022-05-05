@@ -2,18 +2,25 @@ main();
 
 import * as resMan from './resourceManager.js';
 import * as sprRen from './spriteRenderer.js';
+import * as game from './game.js';
 import { vsSource, fsSource } from './shaderSource.js';
-
-let yPos = 100;
-let xPos = 100;
 
 //
 // Start here
 //
 function main() {
+
+  class Renderable extends ApeECS.Component {}
+  Renderable.properties = {
+    xPos: 0,
+    yPos: 0,
+    xSize: 0,
+    ySize: 0
+  }
+
   const canvas = document.querySelector('#glcanvas');
   const gl = canvas.getContext('webgl');
-  let rm = new resMan.ResourceManager();
+  const rm = new resMan.ResourceManager();
 
   // If we don't have a GL context, give up now
   if (!gl) {
@@ -26,59 +33,48 @@ function main() {
   rm.loadShader(gl, gl.FRAGMENT_SHADER, fsSource, 'fShader');
   // link the program with the compiled shaders by providing their key names
   const shaderProgram = rm.loadProgram(gl, 'vShader', 'fShader', 'shaderProgram');
-  let sr = new sprRen.SpriteRenderer(shaderProgram);
+  const sr = new sprRen.SpriteRenderer(shaderProgram);
   const buffers = sr.initBufferData(gl)
 
   var then = 0;
 
-  // Register function (event handler) to be called on a mouse press
-  canvas.onmousedown = function(ev){ click(ev, gl, canvas) };
-
-  const myWorld = new ApeECS.World({
+  var world = new ApeECS.World({
     trackChanges: true,
-    entityPool: 10,
+    entityPool: 3,
     cleanupPools: true,
     useApeDestroy: true
   });
+  world.registerComponent(Renderable);
+
+  // Register function (event handler) to be called on a mouse press
+  canvas.onmousedown = function(ev) { click(ev, world) }
+
+  const gm = new game.Game(gl, sr, buffers, shaderProgram, rm, canvas, world);
 
   // Draw the scene repeatedly
-  function render(now) {
+  function renderLoop(now) {
     now *= 0.001;  // convert to seconds
     const deltaTime = now - then;
     then = now;
 
-    drawScene(gl, shaderProgram, buffers, sr, deltaTime);
+    gm.update(deltaTime);
 
-    requestAnimationFrame(render);
+    gm.render(deltaTime);
+
+    requestAnimationFrame(renderLoop);
   }
-  requestAnimationFrame(render);
+  requestAnimationFrame(renderLoop);
 }
 
-function click(ev) {
-  xPos = ev.clientX;
-  yPos = ev.clientY;
-}
-
-//
-// Draw the scene.
-//
-function drawScene(gl, shaderProgram, buffers, sr, dt) {
-  gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
-  gl.clearDepth(1.0);                 // Clear everything
-  gl.enable(gl.DEPTH_TEST);           // Enable depth testing
-  gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
-
-  // Clear the canvas before we start drawing on it.
-
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-  yPos = (yPos < 490) ? yPos + dt * 100 : 490;
-  
-  sr.drawSprite(gl,
-                shaderProgram,
-                buffers,
-                vec2.fromValues(xPos - 10, yPos - 15),
-                vec2.fromValues(10, 10), 
-                vec3.fromValues(1.0, 1.0, 1.0));
-
+function click(ev, world) {
+  world.createEntity({
+    c: {
+      Renderable: {
+        xPos: ev.clientX - 11,
+        yPos: ev.clientY - 12,
+        xSize: 2,
+        ySize: 2
+      }
+    }
+  })
 }

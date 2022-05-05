@@ -1,9 +1,10 @@
 {
-    "name": "webGLFallingSandGame",
     "version": "1.0.0",
     "main": "index.js",
     "source": "index.html",
+    "type": "module",
     "resourceManager": "module",
     "spriteRenderer": "module",
-    "shaderSource": "module"
+    "shaderSource": "module",
+    "game": "module"
 }
