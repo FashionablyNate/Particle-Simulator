@@ -41,18 +41,21 @@ function main() {
   function renderLoop(now) {
     now *= 0.001;  // convert to seconds
     const deltaTime = now - then;
-    then = now;
 
-    draw();
+    if (70 >= Math.floor(1 / deltaTime)) {
+      then = now;
 
-    gm.update(deltaTime, particles);
+      draw();
 
-    gm.render(deltaTime, particles);
+      gm.update(deltaTime, particles);
 
-    document.getElementById('SelectionDisplay')
-            .innerHTML = 'Particles: ' + (particles.size - 420) +
-                         ' FPS: ' + Math.floor(1 / deltaTime);
+      gm.render(deltaTime, particles);
 
+      document.getElementById('SelectionDisplay')
+              .innerHTML = 'Particles: ' +
+                          (particles.size - (2 * (window.width + window.height) / 5)) +
+                          ' FPS: ' + Math.floor(1 / deltaTime);
+    }
     requestAnimationFrame(renderLoop);
   }
   requestAnimationFrame(renderLoop);
