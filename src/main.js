@@ -41,7 +41,7 @@ function main() {
     const deltaTime = now - then;
     then = now;
 
-    gm.update(deltaTime);
+    gm.update(deltaTime, particles);
 
     gm.render(deltaTime, particles);
 

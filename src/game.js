@@ -19,7 +19,19 @@ export class Game {
         }
     }
 
-    update(dt) {
+    update(dt, particles) {
+        let stall = new Set();
+        particles.forEach(function(value, key) {
+            if (
+                !particles.has((value.x * 1000) + value.y + 5) &&
+                value.type != 1 &&
+                !stall.has(key)
+            ) {
+                particles.set(key + 5, { x: value.x, y: value.y + 5, type: 2 });
+                stall.add(key + 5);
+                particles.delete(key);
+            }
+        });
     }
 
     render(dt, particles) {
