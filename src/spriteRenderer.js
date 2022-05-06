@@ -1,6 +1,6 @@
 export class SpriteRenderer {
 
-    constructor(program) {
+    constructor(program, gl) {
         this.program = program;
         const projectionMatrix = mat4.create();
 
@@ -8,6 +8,8 @@ export class SpriteRenderer {
         // as the destination to receive the result.
         mat4.ortho(projectionMatrix, 0.0, 600, 450, 0.0, -1.0, 1.0);
         this.projectionMatrix = projectionMatrix;
+
+        this.colorUniform = gl.getUniformLocation(this.program.program, 'spriteColor')
     }
 
     initBufferData(gl, shaderProgram) {
@@ -85,7 +87,7 @@ export class SpriteRenderer {
         );
 
         gl.uniform3f(
-            gl.getUniformLocation(shaderProgram.program, 'spriteColor'),
+            this.colorUniform,
             color[0], color[1], color[2]
         );
 

@@ -27,7 +27,7 @@ function main() {
   rm.loadShader(gl, gl.FRAGMENT_SHADER, fsSource, 'fShader');
   // link the program with the compiled shaders by providing their key names
   const shaderProgram = rm.loadProgram(gl, 'vShader', 'fShader', 'shaderProgram');
-  const sr = new sprRen.SpriteRenderer(shaderProgram);
+  const sr = new sprRen.SpriteRenderer(shaderProgram, gl);
   sr.initBufferData(gl, shaderProgram)
 
   var then = 0;
