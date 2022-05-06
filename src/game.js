@@ -9,13 +9,13 @@ export class Game {
     }
 
     init(particles) {
-        for (var x = 0; x <= 600; x += 5) {
+        for (var x = 0; x <= window.width; x += 5) {
             particles.set(x * 1000, { x: x, y: 0, type: 1 });
-            particles.set(x * 1000 + 450, { x: x, y: 450, type: 1 });
+            particles.set(x * 1000 + window.height, { x: x, y: window.height, type: 1 });
         }
-        for (var y = 0; y <= 450; y += 5) {
+        for (var y = 0; y <= window.height; y += 5) {
             particles.set(y, { x: 0, y: y, type: 1 });
-            particles.set(x * 1000 + y, { x: 600, y: y, type: 1 });
+            particles.set(window.width * 1000 + y, { x: window.width, y: y, type: 1 });
         }
     }
 

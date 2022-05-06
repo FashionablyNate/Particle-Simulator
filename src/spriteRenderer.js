@@ -6,7 +6,7 @@ export class SpriteRenderer {
 
         // note: glmatrix.js always has the first argument
         // as the destination to receive the result.
-        mat4.ortho(projectionMatrix, 0.0, 600, 450, 0.0, -1.0, 1.0);
+        mat4.ortho(projectionMatrix, 0.0, window.width, window.height, 0.0, -1.0, 1.0);
         this.projectionMatrix = projectionMatrix;
 
         this.colorUniform = gl.getUniformLocation(this.program.program, 'spriteColor')

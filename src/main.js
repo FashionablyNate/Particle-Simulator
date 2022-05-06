@@ -11,6 +11,8 @@ import { vsSource, fsSource } from './shaderSource.js';
 function main() {
 
   const canvas = document.querySelector('#glcanvas');
+  window.width = canvas.width;
+  window.height = canvas.height;
   const gl = canvas.getContext('webgl');
   const rm = new resMan.ResourceManager();
 
@@ -48,7 +50,7 @@ function main() {
     gm.render(deltaTime, particles);
 
     document.getElementById('SelectionDisplay')
-            .innerHTML = 'Particles: ' + (particles.size - 422) +
+            .innerHTML = 'Particles: ' + (particles.size - 420) +
                          ' FPS: ' + Math.floor(1 / deltaTime);
 
     requestAnimationFrame(renderLoop);
