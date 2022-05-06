@@ -3,6 +3,7 @@ main();
 import * as resMan from './resourceManager.js';
 import * as sprRen from './spriteRenderer.js';
 import * as game from './game.js';
+import { mouse } from './input.js';
 import { vsSource, fsSource } from './shaderSource.js';
 
 //
@@ -10,17 +11,19 @@ import { vsSource, fsSource } from './shaderSource.js';
 //
 function main() {
 
-  class Renderable extends ApeECS.Component {}
-  Renderable.properties = {
-    xPos: 0,
-    yPos: 0,
-    xSize: 0,
-    ySize: 0
-  }
-
   const canvas = document.querySelector('#glcanvas');
   const gl = canvas.getContext('webgl');
   const rm = new resMan.ResourceManager();
+
+  var grid = new Array(100);
+  for (var y = 0; y < 100; y++) grid[y] = new Array(100);
+  for (var x = 0; x < 100; x++) {
+      for (var y = 0; y < 100; y++) {
+          grid[x][y] = 0;
+      }
+  }
+
+  var particles = new Map();
 
   // If we don't have a GL context, give up now
   if (!gl) {
@@ -34,22 +37,11 @@ function main() {
   // link the program with the compiled shaders by providing their key names
   const shaderProgram = rm.loadProgram(gl, 'vShader', 'fShader', 'shaderProgram');
   const sr = new sprRen.SpriteRenderer(shaderProgram);
-  const buffers = sr.initBufferData(gl)
+  sr.initBufferData(gl, shaderProgram)
 
   var then = 0;
 
-  var world = new ApeECS.World({
-    trackChanges: true,
-    entityPool: 3,
-    cleanupPools: true,
-    useApeDestroy: true
-  });
-  world.registerComponent(Renderable);
-
-  // Register function (event handler) to be called on a mouse press
-  canvas.onmousedown = function(ev) { click(ev, world) }
-
-  const gm = new game.Game(gl, sr, buffers, shaderProgram, rm, canvas, world);
+  const gm = new game.Game(gl, sr, shaderProgram, rm, canvas);
 
   // Draw the scene repeatedly
   function renderLoop(now) {
@@ -59,22 +51,44 @@ function main() {
 
     gm.update(deltaTime);
 
-    gm.render(deltaTime);
+    gm.render(deltaTime, particles);
+
+    document.getElementById('SelectionDisplay')
+            .innerHTML = 'Particles: ' + particles.size + ' FPS: ' + Math.floor(1 / deltaTime);
 
     requestAnimationFrame(renderLoop);
   }
   requestAnimationFrame(renderLoop);
-}
 
-function click(ev, world) {
-  world.createEntity({
-    c: {
-      Renderable: {
-        xPos: ev.clientX - 11,
-        yPos: ev.clientY - 12,
-        xSize: 2,
-        ySize: 2
-      }
-    }
-  })
+  canvas.addEventListener("mousedown", start);
+  canvas.addEventListener("mouseup", stop);
+
+  var xPos; var yPos;
+  var coord = { x: 0, y: 0 };
+
+  function draw(event) {
+      xPos = event.clientX - canvas.offsetLeft;
+      yPos = event.clientY - canvas.offsetTop;
+      xPos -= xPos % 5;        yPos -= yPos % 5;
+      xPos = Math.floor(xPos); yPos = Math.floor(yPos);
+
+      let hash = (xPos * 1000) + yPos;
+      console.log(hash);
+
+      if (!particles.has(hash)) particles.set(hash, { x: xPos, y: yPos });
+  }
+
+  function start(event) {
+      canvas.addEventListener("mousemove", draw);
+      reposition(event);
+  }
+
+  function stop() {
+      canvas.removeEventListener("mousemove", draw);
+  }
+
+  function reposition(event) {
+      coord.x = event.clientX - canvas.offsetLeft;
+      coord.y = event.clientY - canvas.offsetTop;
+  }
 }

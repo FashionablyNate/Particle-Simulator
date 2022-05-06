@@ -6,5 +6,6 @@
     "resourceManager": "module",
     "spriteRenderer": "module",
     "shaderSource": "module",
-    "game": "module"
+    "game": "module",
+    "input": "module"
 }
