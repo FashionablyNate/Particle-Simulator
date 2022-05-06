@@ -21,20 +21,32 @@ export class Game {
 
     update(dt, particles) {
         let stall = new Set();
-        let fps = 1 / dt;
-        var movement;
-        if (fps >= 40) movement = 5;
-        else if (20 <= fps && fps < 40) movement = 10;
-        else movement = 15;
-        particles.forEach(function(value, key) {
+        particles.forEach(function(value, k) {
+            var key = k;
+            var dx; var rand = Math.floor(Math.random() * 5);
+            var dy = 5;
+            
+            if (rand == 4) dx = 5;
+            else if (rand == 0) dx = -5;
+            else dx = 0;
+
             if (
-                !particles.has((value.x * 1000) + value.y + movement) &&
+                !particles.has((value.x * 1000) + value.y + dy) &&
                 value.type != 1 &&
-                !stall.has(key) &&
-                value.y + movement < window.height
+                !stall.has(key)
             ) {
-                particles.set(key + 5, { x: value.x, y: value.y + movement, type: 2 });
-                stall.add(key + 5);
+                particles.set(key + dy, { x: value.x, y: value.y + dy, type: 2 });
+                stall.add(key + dy);
+                particles.delete(k);
+                key = k + dy;
+            }
+            if (
+                !particles.has(((value.x + dx) * 1000) + value.y) &&
+                value.type != 1 &&
+                !stall.has(key)
+            ) {
+                particles.set(key + (1000 * dx), { x: value.x + dx, y: value.y, type: 2 });
+                stall.add(key + (1000 * dx));
                 particles.delete(key);
             }
         });
