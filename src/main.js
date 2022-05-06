@@ -3,7 +3,6 @@ main();
 import * as resMan from './resourceManager.js';
 import * as sprRen from './spriteRenderer.js';
 import * as game from './game.js';
-import { mouse } from './input.js';
 import { vsSource, fsSource } from './shaderSource.js';
 
 //
@@ -14,14 +13,6 @@ function main() {
   const canvas = document.querySelector('#glcanvas');
   const gl = canvas.getContext('webgl');
   const rm = new resMan.ResourceManager();
-
-  var grid = new Array(100);
-  for (var y = 0; y < 100; y++) grid[y] = new Array(100);
-  for (var x = 0; x < 100; x++) {
-      for (var y = 0; y < 100; y++) {
-          grid[x][y] = 0;
-      }
-  }
 
   var particles = new Map();
 
@@ -42,6 +33,7 @@ function main() {
   var then = 0;
 
   const gm = new game.Game(gl, sr, shaderProgram, rm, canvas);
+  gm.init(particles);
 
   // Draw the scene repeatedly
   function renderLoop(now) {
@@ -54,7 +46,8 @@ function main() {
     gm.render(deltaTime, particles);
 
     document.getElementById('SelectionDisplay')
-            .innerHTML = 'Particles: ' + particles.size + ' FPS: ' + Math.floor(1 / deltaTime);
+            .innerHTML = 'Particles: ' + (particles.size - 422) +
+                         ' FPS: ' + Math.floor(1 / deltaTime);
 
     requestAnimationFrame(renderLoop);
   }
@@ -73,7 +66,6 @@ function main() {
       xPos = Math.floor(xPos); yPos = Math.floor(yPos);
 
       let hash = (xPos * 1000) + yPos;
-      console.log(hash);
 
       if (!particles.has(hash)) particles.set(hash, { x: xPos, y: yPos });
   }

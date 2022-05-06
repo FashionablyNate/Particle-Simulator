@@ -6,7 +6,7 @@ export class SpriteRenderer {
 
         // note: glmatrix.js always has the first argument
         // as the destination to receive the result.
-        mat4.ortho(projectionMatrix, 0.0, 500, 500, 0.0, -1.0, 1.0);
+        mat4.ortho(projectionMatrix, 0.0, 600, 450, 0.0, -1.0, 1.0);
         this.projectionMatrix = projectionMatrix;
     }
 
@@ -72,16 +72,22 @@ export class SpriteRenderer {
         gl.useProgram(shaderProgram.program);
 
         // Set the shader uniforms
+        gl.uniformMatrix4fv(
+            shaderProgram.uniformLocations.projectionMatrix,
+            false,
+            this.projectionMatrix
+        );
 
         gl.uniformMatrix4fv(
-        shaderProgram.uniformLocations.projectionMatrix,
-        false,
-        this.projectionMatrix);
+            shaderProgram.uniformLocations.modelViewMatrix,
+            false,
+            modelViewMatrix
+        );
 
-        gl.uniformMatrix4fv(
-        shaderProgram.uniformLocations.modelViewMatrix,
-        false,
-        modelViewMatrix);
+        gl.uniform3f(
+            gl.getUniformLocation(shaderProgram.program, 'spriteColor'),
+            color[0], color[1], color[2]
+        );
 
         {
             const offset = 0;
