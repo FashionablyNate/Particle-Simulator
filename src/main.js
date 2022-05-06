@@ -41,6 +41,8 @@ function main() {
     const deltaTime = now - then;
     then = now;
 
+    draw();
+
     gm.update(deltaTime, particles);
 
     gm.render(deltaTime, particles);
@@ -53,34 +55,36 @@ function main() {
   }
   requestAnimationFrame(renderLoop);
 
-  canvas.addEventListener("mousedown", start);
-  canvas.addEventListener("mouseup", stop);
+  // canvas.addEventListener("mousedown", start);
+  // canvas.addEventListener("mouseup", stop);
 
   var xPos; var yPos;
   var coord = { x: 0, y: 0 };
+  var mouseIsDown = false;
 
-  function draw(event) {
-      xPos = event.clientX - canvas.offsetLeft;
-      yPos = event.clientY - canvas.offsetTop;
-      xPos -= xPos % 5;        yPos -= yPos % 5;
-      xPos = Math.floor(xPos); yPos = Math.floor(yPos);
+  canvas.addEventListener('mousemove', function(event) {
+    xPos = event.clientX - canvas.offsetLeft;
+    yPos = event.clientY - canvas.offsetTop;
+    xPos -= xPos % 5;        yPos -= yPos % 5;
+    xPos = Math.floor(xPos); yPos = Math.floor(yPos);
+    draw();
+  }, false);
 
-      let hash = (xPos * 1000) + yPos;
-
-      if (!particles.has(hash)) particles.set(hash, { x: xPos, y: yPos });
-  }
-
-  function start(event) {
-      canvas.addEventListener("mousemove", draw);
-      reposition(event);
-  }
-
-  function stop() {
-      canvas.removeEventListener("mousemove", draw);
-  }
-
-  function reposition(event) {
+  canvas.onmousedown = function(event) {
+      event.preventDefault();
+      mouseIsDown = true;
       coord.x = event.clientX - canvas.offsetLeft;
       coord.y = event.clientY - canvas.offsetTop;
+  }
+
+  canvas.onmouseup = function() {
+      mouseIsDown = false;
+  }
+
+  function draw() {
+    if (mouseIsDown) {
+      let hash = (xPos * 1000) + yPos;
+      if (!particles.has(hash)) particles.set(hash, { x: xPos, y: yPos });
+    }
   }
 }
