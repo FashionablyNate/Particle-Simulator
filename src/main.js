@@ -113,11 +113,11 @@ function main() {
       switch (keyCode) {
           case 81: //q
               select = 'Particle';
-              color = vec3.fromValues(0.9, 0.9, 0.7);
+              color = vec3.fromValues(0.9, 0.9, 0.7, 1.0);
               break;
           case 87: //w
               select = 'Water';
-              color = vec3.fromValues(0.1, 0.5, 1.0);
+              color = vec3.fromValues(0.1, 0.5, 1.0, 1.0);
               break;
       }
   }
