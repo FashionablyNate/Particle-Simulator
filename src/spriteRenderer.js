@@ -58,6 +58,13 @@ export class SpriteRenderer {
 
         // Tell WebGL to use our program when drawing
         gl.useProgram(shaderProgram.program);
+
+        // Set the shader uniforms
+        gl.uniformMatrix4fv(
+            shaderProgram.uniformLocations.projectionMatrix,
+            false,
+            this.projectionMatrix
+        );
     }
 
     drawSprite(gl, shaderProgram, value, size) {
@@ -74,13 +81,6 @@ export class SpriteRenderer {
                     value.matrix,
                     vec3.fromValues(-0.5 * size[0], -0.5 * size[1], 0));
         }
-
-        // Set the shader uniforms
-        gl.uniformMatrix4fv(
-            shaderProgram.uniformLocations.projectionMatrix,
-            false,
-            this.projectionMatrix
-        );
 
         gl.uniformMatrix4fv(
             shaderProgram.uniformLocations.modelViewMatrix,
