@@ -25,10 +25,8 @@ export class Game {
 
     update(dt, particles) {
         let stall = new Set();
-        particles.forEach(function(value, k) {
-            var key = k;
+        particles.forEach(function(value, key) {
             var pdx = 0; var pdy = 0;
-            var dx = 0; var dy = 0;
             var rand = Math.floor(Math.random() * 4);
 
             switch (value.type) {
@@ -47,36 +45,28 @@ export class Game {
                     break;
             }
 
-            dy = (pdy != 0) ? adjustVelocity(dy, pdy, particles, key, false) : 0;
-            if (dy != 0) {
-                if (
-                    !particles.has((value.x * 1000) + value.y + dy) &&
-                    !stall.has(key)
-                ) {
-                    if (value.y + dy > window.height || value.y < 0) {
-                        particles.delete(k);
-                    } else {
-                        particles.set(key + dy, { x: value.x, y: value.y + dy, type: value.type,
-                            color: value.color });
-                        stall.add(key + dy);
-                        particles.delete(k);
-                        key = k + dy;
-                    }
-                }
-            }
+            var fpsRatio = Math.floor(window.targetFPS / (1 / dt));
+            var speed = (fpsRatio == 0) ? 1 : fpsRatio;
+            pdx *= speed; pdy *= speed;
 
-            dx = (pdx != 0) ? adjustVelocity(dx, pdx, particles, key, true) : 0;
-            if (dx != 0) {
+            var dx = (pdx != 0) ? adjustVelocity(dx, pdx, particles, key, true) : 0;
+            var dy = (pdy != 0) ? adjustVelocity(dy, pdy, particles, key, false) : 0;
+            if (dy != 0 || dx != 0) {
                 if (
-                    !particles.has(((value.x + dx) * 1000) + value.y) &&
+                    !particles.has(((value.x + dx) * 1000) + value.y + dy) &&
                     !stall.has(key)
                 ) {
-                    if (value.x + dx > window.width || value.x < 0) {
-                        particles.delete(k);
+                    if (value.y + dy > window.height || value.y < 0 ||
+                        value.x + dx > window.width  || value.x < 0) {
+                        particles.delete(key);
                     } else {
-                        particles.set(key + (1000 * dx), { x: value.x + dx, y: value.y, type: value.type,
-                            color: value.color });
-                        stall.add(key + (1000 * dx));
+                        particles.set(((value.x + dx) * 1000) + value.y + dy, {
+                            x: value.x + dx,
+                            y: value.y + dy,
+                            type: value.type,
+                            color: value.color
+                        });
+                        stall.add(((value.x + dx) * 1000) + value.y + dy);
                         particles.delete(key);
                     }
                 }
@@ -100,9 +90,6 @@ export class Game {
         particles.forEach(function(value, key) {
             if (!value.color) {
                 value.color = vec3.fromValues(1.0, 1.0, 1.0);
-            }
-            if (value.type == 'Water') {
-                value.color = vec3.fromValues(0.1, 0.5, (3 / (Math.random() * 4)));
             }
             sprRen.drawSprite(gl,
                               sp,

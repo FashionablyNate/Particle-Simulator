@@ -17,6 +17,8 @@ function main() {
   window.width = canvas.width;
   window.height = canvas.height;
   window.particleSize = 5;
+  window.targetFPS = 144;
+  var dtMem = []; var avgDt;
   const gl = canvas.getContext('webgl');
   const rm = new resMan.ResourceManager();
 
@@ -46,23 +48,29 @@ function main() {
     now *= 0.001;  // convert to seconds
     const deltaTime = now - then;
 
-    if (1 / deltaTime < 80) {
+    then = now;
 
-      then = now;
+    dtMem.push(deltaTime);
 
-      draw();
+    if (dtMem.length > 100) dtMem.shift();
+    avgDt = dtMem.reduce(function(total, num) {
+      return total + num;
+    }) / dtMem.length
 
-      gm.update(deltaTime, particles);
+    draw();
 
-      gm.render(deltaTime, particles);
+    gm.update(deltaTime, particles);
 
-      document.getElementById('SelectionDisplay1')
-              .innerHTML = 'Particles: ' +
-                          (particles.size - (2 * (window.width + window.height) / window.particleSize)) +
-                          ' FPS: ' + Math.floor(1 / deltaTime);
-      document.getElementById('SelectionDisplay2')
-              .innerHTML = 'Selection: ' + select;
-    }
+    gm.render(deltaTime, particles);
+
+    document.getElementById('SelectionDisplay1')
+            .innerHTML = 'Particles: ' +
+                        (particles.size - (2 * (window.width + window.height) / window.particleSize)) +
+                        ' FPS: ' + Math.floor(1 / avgDt);
+    var fpsRatio = Math.floor(window.targetFPS / (1 / deltaTime));
+    var speed = (fpsRatio == 0) ? 1 : fpsRatio;
+    document.getElementById('SelectionDisplay2')
+            .innerHTML = 'Selection: ' + select + ' Speed: ' + speed;
     requestAnimationFrame(renderLoop);
   }
   requestAnimationFrame(renderLoop);
