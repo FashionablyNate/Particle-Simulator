@@ -11,11 +11,12 @@ import { vsSource, fsSource } from './shaderSource.js';
 function main() {
 
   var select = 'Particle';
+  var color = vec3.fromValues(0.9, 0.9, 0.7);
 
   const canvas = document.querySelector('#glcanvas');
   window.width = canvas.width;
   window.height = canvas.height;
-  window.particleSize = 2;
+  window.particleSize = 5;
   const gl = canvas.getContext('webgl');
   const rm = new resMan.ResourceManager();
 
@@ -45,20 +46,23 @@ function main() {
     now *= 0.001;  // convert to seconds
     const deltaTime = now - then;
 
-    then = now;
+    if (1 / deltaTime < 80) {
 
-    draw();
+      then = now;
 
-    gm.update(deltaTime, particles);
+      draw();
 
-    gm.render(deltaTime, particles);
+      gm.update(deltaTime, particles);
 
-    document.getElementById('SelectionDisplay1')
-            .innerHTML = 'Particles: ' +
-                        (particles.size - (2 * (window.width + window.height) / window.particleSize)) +
-                        ' FPS: ' + Math.floor(1 / deltaTime);
-    document.getElementById('SelectionDisplay2')
-            .innerHTML = 'Selection: ' + select;
+      gm.render(deltaTime, particles);
+
+      document.getElementById('SelectionDisplay1')
+              .innerHTML = 'Particles: ' +
+                          (particles.size - (2 * (window.width + window.height) / window.particleSize)) +
+                          ' FPS: ' + Math.floor(1 / deltaTime);
+      document.getElementById('SelectionDisplay2')
+              .innerHTML = 'Selection: ' + select;
+    }
     requestAnimationFrame(renderLoop);
   }
   requestAnimationFrame(renderLoop);
@@ -89,7 +93,7 @@ function main() {
   function draw() {
     if (mouseIsDown) {
       let hash = (xPos * 1000) + yPos;
-      if (!particles.has(hash)) particles.set(hash, { x: xPos, y: yPos, type: select });
+      if (!particles.has(hash)) particles.set(hash, { x: xPos, y: yPos, type: select, color: color });
     }
   }
 
@@ -99,9 +103,11 @@ function main() {
       switch (keyCode) {
           case 81: //q
               select = 'Particle';
+              color = vec3.fromValues(0.9, 0.9, 0.7);
               break;
           case 87: //w
               select = 'Water';
+              color = vec3.fromValues(0.1, 0.5, 1.0);
               break;
       }
   }
