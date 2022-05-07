@@ -10,6 +10,8 @@ export class SpriteRenderer {
         this.projectionMatrix = projectionMatrix;
 
         this.colorUniform = gl.getUniformLocation(this.program.program, 'spriteColor')
+
+        this.lastColor = vec3.fromValues(0.0, 0.0, 0.0);
     }
 
     initBufferData(gl, shaderProgram) {
@@ -53,25 +55,25 @@ export class SpriteRenderer {
 
         gl.enableVertexAttribArray(
         shaderProgram.attribLocations.vertexPosition);
-    }
-
-    drawSprite(gl, shaderProgram, position, size, color) {
-        // Set the drawing position to the "identity" point, which is
-        // the center of the scene.
-        const modelViewMatrix = mat4.create();
-
-        // Now move the drawing position a bit to where we want to
-        // start drawing the square.
-        mat4.translate(modelViewMatrix,
-            modelViewMatrix,
-            vec3.fromValues(position[0], position[1], 0));
-
-        mat4.scale(modelViewMatrix,
-                modelViewMatrix,
-                vec3.fromValues(-0.5 * size[0], -0.5 * size[1], 0));
 
         // Tell WebGL to use our program when drawing
         gl.useProgram(shaderProgram.program);
+    }
+
+    drawSprite(gl, shaderProgram, value, size) {
+
+        if (!value.matrix) {
+            value.matrix = mat4.create();
+            // Now move the drawing position a bit to where we want to
+            // start drawing the square.
+            mat4.translate(value.matrix,
+                        value.matrix,
+                        vec3.fromValues(value.x, value.y, 0));
+
+            mat4.scale(value.matrix,
+                    value.matrix,
+                    vec3.fromValues(-0.5 * size[0], -0.5 * size[1], 0));
+        }
 
         // Set the shader uniforms
         gl.uniformMatrix4fv(
@@ -83,18 +85,22 @@ export class SpriteRenderer {
         gl.uniformMatrix4fv(
             shaderProgram.uniformLocations.modelViewMatrix,
             false,
-            modelViewMatrix
+            value.matrix
         );
 
-        gl.uniform3f(
-            this.colorUniform,
-            color[0], color[1], color[2]
-        );
+        if (value.color[0] != this.lastColor[0] || value.color[1] != this.lastColor[1] ||
+            value.color[2] != this.lastColor[2]) {
+            gl.uniform3f(
+                this.colorUniform,
+                value.color[0], value.color[1], value.color[2]
+            );
+        }
 
         {
             const offset = 0;
             const vertexCount = 4;
             gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
         }
+        this.lastColor = value.color;
     }
 }

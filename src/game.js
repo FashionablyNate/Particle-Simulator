@@ -12,14 +12,28 @@ export class Game {
 
     init(particles) {
         for (var x = 0; x <= window.width; x += window.particleSize) {
-            particles.set(x * 1000, { x: x, y: 0, type: 1 });
-            particles.set(x * 1000 + window.height, { x: x, y: window.height, type: 1,
-                color: vec3.fromValues(1.0, 1.0, 1.0) });
+            particles.set(x * 1000, {
+                x: x, y: 0, type: 1,
+                color: vec3.fromValues(1.0, 1.0, 1.0),
+                matrix: false
+            });
+            particles.set(x * 1000 + window.height, {
+                x: x, y: window.height, type: 1,
+                color: vec3.fromValues(1.0, 1.0, 1.0),
+                matrix: false
+            });
         }
         for (var y = 0; y <= window.height; y += window.particleSize) {
-            particles.set(y, { x: 0, y: y, type: 1 });
-            particles.set(window.width * 1000 + y, { x: window.width, y: y, type: 1,
-                color: vec3.fromValues(1.0, 1.0, 1.0) });
+            particles.set(y, {
+                x: 0, y: y, type: 1,
+                color: vec3.fromValues(1.0, 1.0, 1.0),
+                matrix: false
+            });
+            particles.set(window.width * 1000 + y, {
+                x: window.width, y: y, type: 1,
+                color: vec3.fromValues(1.0, 1.0, 1.0),
+                matrix: false
+            });
         }
     }
 
@@ -64,7 +78,8 @@ export class Game {
                             x: value.x + dx,
                             y: value.y + dy,
                             type: value.type,
-                            color: value.color
+                            color: value.color,
+                            matrix: false
                         });
                         stall.add(((value.x + dx) * 1000) + value.y + dy);
                         particles.delete(key);
@@ -88,14 +103,10 @@ export class Game {
         let sp = this.sp;
         
         particles.forEach(function(value, key) {
-            if (!value.color) {
-                value.color = vec3.fromValues(1.0, 1.0, 1.0);
-            }
             sprRen.drawSprite(gl,
                               sp,
-                              vec2.fromValues(value.x, value.y),
-                              vec2.fromValues(window.particleSize, window.particleSize),
-                              value.color); 
+                              value,
+                              vec2.fromValues(window.particleSize, window.particleSize)); 
         });
     }
 }

@@ -101,7 +101,9 @@ function main() {
   function draw() {
     if (mouseIsDown) {
       let hash = (xPos * 1000) + yPos;
-      if (!particles.has(hash)) particles.set(hash, { x: xPos, y: yPos, type: select, color: color });
+      if (!particles.has(hash)) particles.set(hash, {
+        x: xPos, y: yPos, type: select, color: color, matrix: false
+      });
     }
   }
 
