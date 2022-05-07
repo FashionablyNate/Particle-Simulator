@@ -1,5 +1,7 @@
 canvas {
 	background-color: black;
+	width: 600;
+	height: 450;
 }
 video {
 	display: none;

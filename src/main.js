@@ -10,9 +10,12 @@ import { vsSource, fsSource } from './shaderSource.js';
 //
 function main() {
 
+  var select = 'Particle';
+
   const canvas = document.querySelector('#glcanvas');
   window.width = canvas.width;
   window.height = canvas.height;
+  window.particleSize = 2;
   const gl = canvas.getContext('webgl');
   const rm = new resMan.ResourceManager();
 
@@ -42,26 +45,23 @@ function main() {
     now *= 0.001;  // convert to seconds
     const deltaTime = now - then;
 
-    if (70 >= Math.floor(1 / deltaTime)) {
-      then = now;
+    then = now;
 
-      draw();
+    draw();
 
-      gm.update(deltaTime, particles);
+    gm.update(deltaTime, particles);
 
-      gm.render(deltaTime, particles);
+    gm.render(deltaTime, particles);
 
-      document.getElementById('SelectionDisplay')
-              .innerHTML = 'Particles: ' +
-                          (particles.size - (2 * (window.width + window.height) / 5)) +
-                          ' FPS: ' + Math.floor(1 / deltaTime);
-    }
+    document.getElementById('SelectionDisplay1')
+            .innerHTML = 'Particles: ' +
+                        (particles.size - (2 * (window.width + window.height) / window.particleSize)) +
+                        ' FPS: ' + Math.floor(1 / deltaTime);
+    document.getElementById('SelectionDisplay2')
+            .innerHTML = 'Selection: ' + select;
     requestAnimationFrame(renderLoop);
   }
   requestAnimationFrame(renderLoop);
-
-  // canvas.addEventListener("mousedown", start);
-  // canvas.addEventListener("mouseup", stop);
 
   var xPos; var yPos;
   var coord = { x: 0, y: 0 };
@@ -70,7 +70,7 @@ function main() {
   canvas.addEventListener('mousemove', function(event) {
     xPos = event.clientX - canvas.offsetLeft;
     yPos = event.clientY - canvas.offsetTop;
-    xPos -= xPos % 5;        yPos -= yPos % 5;
+    xPos -= xPos % window.particleSize; yPos -= yPos % window.particleSize;
     xPos = Math.floor(xPos); yPos = Math.floor(yPos);
     draw();
   }, false);
@@ -89,7 +89,25 @@ function main() {
   function draw() {
     if (mouseIsDown) {
       let hash = (xPos * 1000) + yPos;
-      if (!particles.has(hash)) particles.set(hash, { x: xPos, y: yPos });
+      if (!particles.has(hash)) particles.set(hash, { x: xPos, y: yPos, type: select });
     }
+  }
+
+  window.addEventListener("keydown", onKeyDown, false);
+
+  function KeyEvent(keyCode) {
+      switch (keyCode) {
+          case 81: //q
+              select = 'Particle';
+              break;
+          case 87: //w
+              select = 'Water';
+              break;
+      }
+  }
+
+  function onKeyDown(event) {
+      var keyCode = event.keyCode;
+      KeyEvent(keyCode);
   }
 }

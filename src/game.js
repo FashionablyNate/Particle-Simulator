@@ -1,3 +1,5 @@
+import { adjustVelocity } from './collision.js';
+
 export class Game {
 
     constructor(gl, sr, sp, rm, canvas) {
@@ -9,11 +11,11 @@ export class Game {
     }
 
     init(particles) {
-        for (var x = 0; x <= window.width; x += 5) {
+        for (var x = 0; x <= window.width; x += window.particleSize) {
             particles.set(x * 1000, { x: x, y: 0, type: 1 });
             particles.set(x * 1000 + window.height, { x: x, y: window.height, type: 1 });
         }
-        for (var y = 0; y <= window.height; y += 5) {
+        for (var y = 0; y <= window.height; y += window.particleSize) {
             particles.set(y, { x: 0, y: y, type: 1 });
             particles.set(window.width * 1000 + y, { x: window.width, y: y, type: 1 });
         }
@@ -23,31 +25,57 @@ export class Game {
         let stall = new Set();
         particles.forEach(function(value, k) {
             var key = k;
-            var dx; var rand = Math.floor(Math.random() * 5);
-            var dy = 5;
-            
-            if (rand == 4) dx = 5;
-            else if (rand == 0) dx = -5;
-            else dx = 0;
+            var pdx = 0; var pdy = 0;
+            var dx = 0; var dy = 0;
+            var rand = Math.floor(Math.random() * 4);
 
-            if (
-                !particles.has((value.x * 1000) + value.y + dy) &&
-                value.type != 1 &&
-                !stall.has(key)
-            ) {
-                particles.set(key + dy, { x: value.x, y: value.y + dy, type: 2 });
-                stall.add(key + dy);
-                particles.delete(k);
-                key = k + dy;
+            switch (value.type) {
+                case 'Border': // border
+                    break;
+
+                case 'Particle': // particle
+                    pdy = window.particleSize;
+                    break;
+
+                case 'Water': // water
+                    if (rand == 3) pdx = window.particleSize;
+                    else if (rand == 0) pdx = -1 * window.particleSize;
+                    else pdx = 0;
+                    pdy = window.particleSize;
+                    break;
             }
-            if (
-                !particles.has(((value.x + dx) * 1000) + value.y) &&
-                value.type != 1 &&
-                !stall.has(key)
-            ) {
-                particles.set(key + (1000 * dx), { x: value.x + dx, y: value.y, type: 2 });
-                stall.add(key + (1000 * dx));
-                particles.delete(key);
+
+            dy = (pdy != 0) ? adjustVelocity(dy, pdy, particles, key, false) : 0;
+            if (dy != 0) {
+                if (
+                    !particles.has((value.x * 1000) + value.y + dy) &&
+                    !stall.has(key)
+                ) {
+                    if (value.y + dy > window.height || value.y < 0) {
+                        particles.delete(k);
+                    } else {
+                        particles.set(key + dy, { x: value.x, y: value.y + dy, type: value.type });
+                        stall.add(key + dy);
+                        particles.delete(k);
+                        key = k + dy;
+                    }
+                }
+            }
+
+            dx = (pdx != 0) ? adjustVelocity(dx, pdx, particles, key, true) : 0;
+            if (dx != 0) {
+                if (
+                    !particles.has(((value.x + dx) * 1000) + value.y) &&
+                    !stall.has(key)
+                ) {
+                    if (value.x + dx > window.width || value.x < 0) {
+                        particles.delete(k);
+                    } else {
+                        particles.set(key + (1000 * dx), { x: value.x + dx, y: value.y, type: value.type });
+                        stall.add(key + (1000 * dx));
+                        particles.delete(key);
+                    }
+                }
             }
         });
     }
@@ -66,12 +94,24 @@ export class Game {
         let sp = this.sp;
         
         particles.forEach(function(value, key) {
-            let color = (value.type == 1) ?
-                vec3.fromValues(0.4, 0.4, 0.4) : vec3.fromValues(0.0, 0.3, 1.0);
+            var color = vec3.fromValues(1.0, 1.0, 1.0);
+            switch (value.type) {
+                case "Border":
+                    color = vec3.fromValues(0.4, 0.4, 0.4);
+                    break;
+                
+                case "Particle":
+                    color = vec3.fromValues(0.9, 0.9, 0.7);
+                    break;
+                
+                case "Water":
+                    color = vec3.fromValues(0.0, 0.3, 1.0);
+                    break;
+            }
             sprRen.drawSprite(gl,
                               sp,
                               vec2.fromValues(value.x, value.y),
-                              vec2.fromValues(5, 5),
+                              vec2.fromValues(window.particleSize, window.particleSize),
                               color); 
         });
     }
