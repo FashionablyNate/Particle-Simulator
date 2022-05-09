@@ -16,10 +16,10 @@ function main() {
   const canvas = document.querySelector('#glcanvas');
   window.width = canvas.width;
   window.height = canvas.height;
-  window.particleSize = 5;
-  window.targetFPS = 144;
+  window.particleSize = 3;
+  window.targetFPS = 60;
   var dtMem = []; var avgDt;
-  const gl = canvas.getContext('webgl');
+  const gl = canvas.getContext('webgl', {antialias: false, depth: false});
   const rm = new resMan.ResourceManager();
 
   var particles = new Map();
@@ -67,10 +67,13 @@ function main() {
             .innerHTML = 'Particles: ' +
                         (particles.size - (2 * (window.width + window.height) / window.particleSize)) +
                         ' FPS: ' + Math.floor(1 / avgDt);
-    var fpsRatio = Math.floor(window.targetFPS / (1 / deltaTime));
+
+    var fpsRatio = window.targetFPS / (1 / deltaTime);
     var speed = (fpsRatio == 0) ? 1 : fpsRatio;
+
     document.getElementById('SelectionDisplay2')
-            .innerHTML = 'Selection: ' + select + ' Speed: ' + speed;
+            .innerHTML = 'Selection: ' + select + ' Speed: ' + speed.toPrecision(1);
+    
     requestAnimationFrame(renderLoop);
   }
   requestAnimationFrame(renderLoop);
@@ -102,7 +105,7 @@ function main() {
     if (mouseIsDown) {
       let hash = (xPos * 1000) + yPos;
       if (!particles.has(hash)) particles.set(hash, {
-        x: xPos, y: yPos, type: select, color: color, matrix: false
+        x: xPos, y: yPos, type: select, color: color, matrix: false, lastMove: 0
       });
     }
   }
@@ -113,11 +116,11 @@ function main() {
       switch (keyCode) {
           case 81: //q
               select = 'Particle';
-              color = vec3.fromValues(0.9, 0.9, 0.7, 1.0);
+              color = vec3.fromValues(0.9, 0.9, 0.7);
               break;
           case 87: //w
               select = 'Water';
-              color = vec3.fromValues(0.1, 0.5, 1.0, 1.0);
+              color = vec3.fromValues(0.1, 0.5, 1.0);
               break;
       }
   }

@@ -15,9 +15,6 @@ export class SpriteRenderer {
     }
 
     initBufferData(gl, shaderProgram) {
-
-        gl.enable(gl.BLEND);
-        gl.blendFunc(gl.ONE_MINUS_SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
         
         // Now create an array of positions for the square.
         const positions = [
@@ -92,9 +89,9 @@ export class SpriteRenderer {
 
         if (value.color[0] != this.lastColor[0] || value.color[1] != this.lastColor[1] ||
             value.color[2] != this.lastColor[2]) {
-            gl.uniform4f(
+            gl.uniform3f(
                 this.colorUniform,
-                value.color[0], value.color[1], value.color[2], value.color[3]
+                value.color[0], value.color[1], value.color[2]
             );
         }
 

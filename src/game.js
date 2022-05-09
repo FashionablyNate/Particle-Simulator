@@ -14,25 +14,25 @@ export class Game {
         for (var x = 0; x <= window.width; x += window.particleSize) {
             particles.set(x * 1000, {
                 x: x, y: 0, type: 1,
-                color: vec3.fromValues(1.0, 1.0, 1.0),
-                matrix: false
+                color: vec4.fromValues(1.0, 1.0, 1.0),
+                matrix: false, lastMove: 0
             });
             particles.set(x * 1000 + window.height, {
                 x: x, y: window.height, type: 1,
-                color: vec3.fromValues(1.0, 1.0, 1.0),
-                matrix: false
+                color: vec4.fromValues(1.0, 1.0, 1.0),
+                matrix: false, lastMove: 0
             });
         }
         for (var y = 0; y <= window.height; y += window.particleSize) {
             particles.set(y, {
                 x: 0, y: y, type: 1,
-                color: vec3.fromValues(1.0, 1.0, 1.0),
-                matrix: false
+                color: vec4.fromValues(1.0, 1.0, 1.0),
+                matrix: false, lastMove: 0
             });
             particles.set(window.width * 1000 + y, {
                 x: window.width, y: y, type: 1,
-                color: vec3.fromValues(1.0, 1.0, 1.0),
-                matrix: false
+                color: vec4.fromValues(1.0, 1.0, 1.0),
+                matrix: false, lastMove: 0
             });
         }
     }
@@ -41,7 +41,7 @@ export class Game {
         let stall = new Set();
         particles.forEach(function(value, key) {
             var pdx = 0; var pdy = 0;
-            var rand = Math.floor(Math.random() * 4);
+            var rand = Math.floor(Math.random() * 5);
 
             switch (value.type) {
                 case 'Border': // border
@@ -52,15 +52,18 @@ export class Game {
                     break;
 
                 case 'Water': // water
-                    if (rand == 3) pdx = window.particleSize;
+                    if (rand == 4) pdx = window.particleSize;
                     else if (rand == 0) pdx = -1 * window.particleSize;
                     else pdx = 0;
                     pdy = window.particleSize;
                     break;
             }
 
-            var fpsRatio = Math.floor(window.targetFPS / (1 / dt));
+            var fpsRatio = window.targetFPS / (1 / dt);
             var speed = (fpsRatio == 0) ? 1 : fpsRatio;
+            if (speed < 1) {
+                speed *= (value.lastMove + 1);
+            }
             pdx *= speed; pdy *= speed;
 
             var dx = (pdx != 0) ? adjustVelocity(dx, pdx, particles, key, true) : 0;
@@ -79,12 +82,15 @@ export class Game {
                             y: value.y + dy,
                             type: value.type,
                             color: value.color,
-                            matrix: false
+                            matrix: false,
+                            lastMove: 0
                         });
                         stall.add(((value.x + dx) * 1000) + value.y + dy);
                         particles.delete(key);
                     }
                 }
+            } else {
+                value.lastMove += 1;
             }
         });
     }
