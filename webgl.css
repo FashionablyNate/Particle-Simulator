@@ -6,3 +6,7 @@ canvas {
 video {
 	display: none;
 }
+body {
+	background-color: #282828;
+	color: #ffffff;
+}
