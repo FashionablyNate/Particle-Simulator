@@ -41,7 +41,6 @@ export class Game {
         let stall = new Set();
         particles.forEach(function(value, key) {
             var pdx = 0; var pdy = 0;
-            var rand = Math.floor(Math.random() * 5);
 
             switch (value.type) {
                 case 'Border': // border
@@ -52,7 +51,16 @@ export class Game {
                     break;
 
                 case 'Water': // water
+                    var rand = Math.floor(Math.random() * 5);
                     if (rand == 4) pdx = window.particleSize;
+                    else if (rand == 0) pdx = -1 * window.particleSize;
+                    else pdx = 0;
+                    pdy = window.particleSize;
+                    break;
+
+                case 'Lava': // water
+                    var rand = Math.floor(Math.random() * 9);
+                    if (rand == 8) pdx = window.particleSize;
                     else if (rand == 0) pdx = -1 * window.particleSize;
                     else pdx = 0;
                     pdy = window.particleSize;
@@ -98,8 +106,8 @@ export class Game {
     render(dt, particles) {
         this.gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
         this.gl.clearDepth(1.0);                 // Clear everything
-        this.gl.enable(this.gl.DEPTH_TEST);           // Enable depth testing
-        this.gl.depthFunc(this.gl.LEQUAL);            // Near things obscure far things
+        this.gl.enable(this.gl.DEPTH_TEST);      // Enable depth testing
+        this.gl.depthFunc(this.gl.LEQUAL);       // Near things obscure far things
 
         // Clear the canvas before we start drawing on it.
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);

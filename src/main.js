@@ -114,6 +114,10 @@ function main() {
 
   function KeyEvent(keyCode) {
       switch (keyCode) {
+          case 69: //e
+              select = 'Lava';
+              color = vec3.fromValues(1.0, 0.6, 0.0);
+              break;
           case 81: //q
               select = 'Particle';
               color = vec3.fromValues(0.9, 0.9, 0.7);
