@@ -8,7 +8,7 @@ import { vsSource, fsSource } from './shaderSource.js';
 //
 // Start here
 //
-function main() {
+export function main() {
 
   var select = 'Particle';
   var color = vec3.fromValues(0.9, 0.9, 0.7);
