@@ -16,7 +16,7 @@ function main() {
   const canvas = document.querySelector('#glcanvas');
   window.width = canvas.width;
   window.height = canvas.height;
-  window.particleSize = 3;
+  window.particleSize = 5;
   window.targetFPS = 60;
   var dtMem = []; var avgDt;
   const gl = canvas.getContext('webgl', {antialias: false, depth: false});

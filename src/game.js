@@ -98,7 +98,27 @@ export class Game {
                     }
                 }
             } else {
-                value.lastMove += 1;
+                var belowType = (particles.has(key + window.particleSize)) ? particles.get(key + window.particleSize).type : false;
+                if (value.type == 'Particle' && belowType == 'Water') {
+                    particles.set(key, {
+                        x: value.x,
+                        y: value.y,
+                        type: 'Water',
+                        color: vec4.fromValues(0.1, 0.5, 1.0, 1.0),
+                        matrix: false,
+                        lastMove: 0
+                    });
+                    particles.set(key + window.particleSize, {
+                        x: value.x,
+                        y: value.y + window.particleSize,
+                        type: 'Particle',
+                        color: vec4.fromValues(0.9, 0.9, 0.7, 1.0),
+                        matrix: false,
+                        lastMove: 0
+                    });
+                } else {
+                    value.lastMove += 1;
+                }
             }
         });
     }
