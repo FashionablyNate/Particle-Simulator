@@ -1,3 +1,5 @@
+import { mat4, vec3 } from 'gl-matrix';
+
 export class SpriteRenderer {
 
     constructor(program, gl) {

@@ -4,6 +4,7 @@ import * as resMan from './resourceManager.js';
 import * as sprRen from './spriteRenderer.js';
 import * as game from './game.js';
 import { vsSource, fsSource } from './shaderSource.js';
+import { vec3 } from 'gl-matrix';
 
 //
 // Start here
