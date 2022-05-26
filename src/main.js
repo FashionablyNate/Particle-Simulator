@@ -84,8 +84,8 @@ export function main() {
   var mouseIsDown = false;
 
   canvas.addEventListener('mousemove', function(event) {
-    xPos = event.clientX - canvas.offsetLeft;
-    yPos = event.clientY - canvas.offsetTop;
+    xPos = event.pageX - canvas.offsetLeft;
+    yPos = event.pageY - canvas.offsetTop;
     xPos -= xPos % window.particleSize; yPos -= yPos % window.particleSize;
     xPos = Math.floor(xPos); yPos = Math.floor(yPos);
     draw();
@@ -94,8 +94,8 @@ export function main() {
   canvas.onmousedown = function(event) {
       event.preventDefault();
       mouseIsDown = true;
-      coord.x = event.clientX - canvas.offsetLeft;
-      coord.y = event.clientY - canvas.offsetTop;
+      coord.x = event.pageX - canvas.offsetLeft;
+      coord.y = event.pageY - canvas.offsetTop;
   }
 
   canvas.onmouseup = function() {
