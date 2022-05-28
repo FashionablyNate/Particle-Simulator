@@ -1,20 +1,31 @@
-main();
-
 import * as resMan from './resourceManager.js';
 import * as sprRen from './spriteRenderer.js';
 import * as game from './game.js';
 import { vsSource, fsSource } from './shaderSource.js';
 import { vec3 } from 'gl-matrix';
+import { createElement } from 'react';
 
 //
 // Start here
 //
 export function main() {
 
+  if (document == null) { 
+    return null;
+  }
+
+  var canvas = null;
+
+  if (document.getElementById("glcanvas") == null) {
+    return null;
+  } else {
+    canvas = document.getElementById("glcanvas");
+  }
+
   var select = 'Particle';
   var color = vec3.fromValues(0.9, 0.9, 0.7);
 
-  const canvas = document.querySelector('#glcanvas');
+  // const canvas = document.querySelector('glcanvas');
   window.width = canvas.width;
   window.height = canvas.height;
   window.particleSize = 5;
@@ -134,4 +145,5 @@ export function main() {
       var keyCode = event.keyCode;
       KeyEvent(keyCode);
   }
+  return null;
 }
