@@ -1,4 +1,7 @@
-# WebGL_Falling_Sand_Game
+# Particle-Simualtor
 
-This is my attempt at creating a falling sand game using WebGL.
-I'm striving to make sure that the game runs in a modern browser with no additional addons or plugins required.
+A web-based physics sandbox built using Javascript and WebGL.
+
+<img src="https://user-images.githubusercontent.com/49291237/170840132-3b22d766-1d7d-4f8a-a80f-f3fdb6753944.png" alt="screenshot of Particle-Simulator" width="400"/>
+
+A live version can be found on my [website](https://nathanspelts.com/particle-simulator).
