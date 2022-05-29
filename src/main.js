@@ -138,6 +138,10 @@ export function main() {
               select = 'Water';
               color = vec3.fromValues(0.1, 0.5, 1.0);
               break;
+          case 82: //r
+              select = 'Steam';
+              color = vec3.fromValues(0.7, 0.7, 0.7);
+              break;
       }
   }
 

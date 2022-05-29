@@ -52,6 +52,10 @@ export class Game {
                         pdy = window.particleSize;
                         break;
 
+                    case 'Stone':
+                        pdy = window.particleSize;
+                        break;
+
                     case 'Water': // water
                         var rand = Math.floor(Math.random() * 5);
                         if (rand == 4) pdx = window.particleSize;
@@ -69,7 +73,12 @@ export class Game {
                         break;
                     
                     case 'Steam':
-                        var rand = Math.floor(Math.random() * 18)
+                        var rand = Math.floor(Math.random() * 8);
+                        if (rand == 7) pdx = window.particleSize;
+                        else if (rand == 0) pdx = -1 * window.particleSize;
+                        else pdx = 0;
+                        pdy = -1 * window.particleSize;
+                        break;
                 }
 
                 var speed = window.targetFPS / (1 / avgDt);
@@ -77,8 +86,8 @@ export class Game {
                     speed *= (value.lastMove + 1);
                 }
                 pdx *= speed;
-                if (pdx > 15) { pdx = 15 }
-                else if (pdx < -15) { pdx = -15 }
+                if (pdx > window.particleSize * 2) { pdx = window.particleSize * 2 }
+                else if (pdx < -1 * window.particleSize * 2) { pdx = -1 * window.particleSize * 2 }
                 pdy *= speed;
 
                 var dx = (pdx != 0) ? adjustVelocity(dx, pdx, particles, key, true) : 0;
@@ -105,30 +114,112 @@ export class Game {
                     }
                     value.lastMove = 0;
                 } else {
+                    var leftType = (particles.has(key - (1000 * window.particleSize))) ? particles.get(key - (1000 * window.particleSize)).type : false;
+                    var aboveType = (particles.has(key - window.particleSize)) ? particles.get(key - window.particleSize).type : false;
+                    var rightType = (particles.has(key + (1000 * window.particleSize))) ? particles.get(key + (1000 * window.particleSize)).type : false;
                     var belowType = (particles.has(key + window.particleSize)) ? particles.get(key + window.particleSize).type : false;
-                    if (value.type == 'Particle' && belowType == 'Water') {
-                        particles.set(key, {
-                            x: value.x,
-                            y: value.y,
-                            type: 'Water',
-                            color: vec4.fromValues(0.1, 0.5, 1.0, 1.0),
-                            matrix: false,
-                            lastMove: 0
-                        });
-                        particles.set(key + window.particleSize, {
-                            x: value.x,
-                            y: value.y + window.particleSize,
-                            type: 'Particle',
-                            color: vec4.fromValues(0.9, 0.9, 0.7, 1.0),
-                            matrix: false,
-                            lastMove: 0
-                        });
-                    } else {
-                        if (pdx != 0 || pdy != 0) {
-                            value.lastMove += 1;
-                        } else {
-                            value.lastMove = 0;
+                    if (value.type == 'Particle') {
+                        if (belowType == 'Water') {
+                            particles.set(key, {
+                                x: value.x,
+                                y: value.y,
+                                type: 'Water',
+                                color: vec4.fromValues(0.1, 0.5, 1.0, 1.0),
+                                matrix: false,
+                                lastMove: 0
+                            });
+                            particles.set(key + window.particleSize, {
+                                x: value.x,
+                                y: value.y + window.particleSize,
+                                type: 'Particle',
+                                color: vec4.fromValues(0.9, 0.9, 0.7, 1.0),
+                                matrix: false,
+                                lastMove: 0
+                            });
                         }
+                    } else if (value.type == 'Stone') {
+                        if (
+                            leftType == 'Lava' ||
+                            aboveType == 'Lava' ||
+                            rightType == 'Lava' ||
+                            belowType == 'Lava'
+                        ) {
+                            if (Math.floor(Math.random() * 50) == 49) {
+                                particles.set(key, {
+                                    x: value.x,
+                                    y: value.y,
+                                    type: 'Lava',
+                                    color: vec4.fromValues(1.0, 0.6, 0.0, 1.0),
+                                    matrix: false,
+                                    lastMove: 0
+                                });
+                            } else if (belowType == 'Lava') {
+                                particles.set(key, {
+                                    x: value.x,
+                                    y: value.y,
+                                    type: 'Lava',
+                                    color: vec4.fromValues(1.0, 0.6, 0.0, 1.0),
+                                    matrix: false,
+                                    lastMove: 0
+                                });
+                                particles.set(key + window.particleSize, {
+                                    x: value.x,
+                                    y: value.y + window.particleSize,
+                                    type: 'Stone',
+                                    color: vec4.fromValues(0.6, 0.6, 0.6, 1.0),
+                                    matrix: false,
+                                    lastMove: 0
+                                });
+                            }
+                        }
+                    } else if (value.type == 'Steam') {
+                        if (aboveType == 'Border') {
+                            particles.set(key, {
+                                x: value.x,
+                                y: value.y,
+                                type: 'Water',
+                                color: vec4.fromValues(0.1, 0.5, 1.0, 1.0),
+                                matrix: false,
+                                lastMove: 0
+                            });
+                        }
+                    } else if (value.type == 'Water') {
+                        if (
+                            leftType == 'Lava' ||
+                            aboveType == 'Lava' ||
+                            rightType == 'Lava' ||
+                            belowType == 'Lava'
+                        ) {
+                            particles.set(key, {
+                                x: value.x,
+                                y: value.y,
+                                type: 'Steam',
+                                color: vec4.fromValues(0.7, 0.7, 0.7, 1.0),
+                                matrix: false,
+                                lastMove: 0
+                            });
+                        }
+                    } else if (value.type == 'Lava') {
+                        if (
+                            leftType == 'Water' ||
+                            aboveType == 'Water' ||
+                            rightType == 'Water' ||
+                            belowType == 'Water'
+                        ) {
+                            particles.set(key, {
+                                x: value.x,
+                                y: value.y,
+                                type: 'Stone',
+                                color: vec4.fromValues(0.6, 0.6, 0.6, 1.0),
+                                matrix: false,
+                                lastMove: 0
+                            });
+                        }
+                    }
+                    if (pdx != 0 || pdy != 0) {
+                        value.lastMove += 1;
+                    } else {
+                        value.lastMove = 0;
                     }
                 }
             }
