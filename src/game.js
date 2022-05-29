@@ -14,25 +14,25 @@ export class Game {
     init(particles) {
         for (var x = 0; x <= window.width; x += window.particleSize) {
             particles.set(x * 1000, {
-                x: x, y: 0, type: 1,
-                color: vec4.fromValues(1.0, 1.0, 1.0),
+                x: x, y: 0, type: 'Border',
+                color: vec4.fromValues(0.4, 0.4, 0.4, 1.0),
                 matrix: false, lastMove: 0
             });
             particles.set(x * 1000 + window.height, {
-                x: x, y: window.height, type: 1,
-                color: vec4.fromValues(1.0, 1.0, 1.0),
+                x: x, y: window.height, type: 'Border',
+                color: vec4.fromValues(0.4, 0.4, 0.4, 1.0),
                 matrix: false, lastMove: 0
             });
         }
         for (var y = 0; y <= window.height; y += window.particleSize) {
             particles.set(y, {
-                x: 0, y: y, type: 1,
-                color: vec4.fromValues(1.0, 1.0, 1.0),
+                x: 0, y: y, type: 'Border',
+                color: vec4.fromValues(0.4, 0.4, 0.4, 1.0),
                 matrix: false, lastMove: 0
             });
             particles.set(window.width * 1000 + y, {
-                x: window.width, y: y, type: 1,
-                color: vec4.fromValues(1.0, 1.0, 1.0),
+                x: window.width, y: y, type: 'Border',
+                color: vec4.fromValues(0.4, 0.4, 0.4, 1.0),
                 matrix: false, lastMove: 0
             });
         }
@@ -60,16 +60,18 @@ export class Game {
                     break;
 
                 case 'Lava': // water
-                    var rand = Math.floor(Math.random() * 9);
-                    if (rand == 8) pdx = window.particleSize;
+                    var rand = Math.floor(Math.random() * 18);
+                    if (rand == 17) pdx = window.particleSize;
                     else if (rand == 0) pdx = -1 * window.particleSize;
                     else pdx = 0;
                     pdy = window.particleSize;
                     break;
+                
+                case 'Steam':
             }
 
             var fpsRatio = window.targetFPS / (1 / dt);
-            var speed = (fpsRatio == 0) ? 1 : fpsRatio;
+            var speed = (fpsRatio <= 1) ? 1 : fpsRatio;
             if (speed < 1) {
                 speed *= (value.lastMove + 1);
             }
