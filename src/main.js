@@ -76,15 +76,19 @@ export function main() {
     gm.render(deltaTime, particles);
 
     document.getElementById('SelectionDisplay1')
-            .innerHTML = 'Particles: ' +
-                        (particles.size - (2 * (window.width + window.height) / window.particleSize)) +
-                        ' FPS: ' + Math.floor(1 / avgDt);
+            .innerHTML = ' ' + (particles.size - (2 * (window.width + window.height) / window.particleSize));
 
     var fpsRatio = window.targetFPS / (1 / deltaTime);
     var speed = (fpsRatio == 0) ? 1 : fpsRatio;
 
     document.getElementById('SelectionDisplay2')
-            .innerHTML = 'Selection: ' + select + ' Speed: ' + speed.toPrecision(1);
+            .innerHTML = ' ' + Math.floor(1 / avgDt);
+
+    document.getElementById('SelectionDisplay3')
+            .innerHTML = ' ' + select;
+    
+    document.getElementById('SelectionDisplay4')
+            .innerHTML = ' ' + speed.toPrecision(1);
     
     requestAnimationFrame(renderLoop);
   }
@@ -153,5 +157,36 @@ export function main() {
       var keyCode = event.keyCode;
       KeyEvent(keyCode);
   }
+
+  document.getElementById("sand-select").addEventListener("click", sandSelect);
+  function sandSelect() {
+    select = 'Particle';
+    color = vec3.fromValues(0.9, 0.9, 0.7);
+  }
+
+  document.getElementById("water-select").addEventListener("click", waterSelect);
+  function waterSelect() {
+    select = 'Water';
+    color = vec3.fromValues(0.1, 0.5, 1.0);
+  }
+
+  document.getElementById("lava-select").addEventListener("click", lavaSelect);
+  function lavaSelect() {
+    select = 'Lava';
+    color = vec3.fromValues(1.0, 0.6, 0.0);
+  }
+
+  document.getElementById("steam-select").addEventListener("click", steamSelect);
+  function steamSelect() {
+    select = 'Steam';
+    color = vec3.fromValues(0.7, 0.7, 0.7);
+  }
+
+  document.getElementById("stone-select").addEventListener("click", stoneSelect);
+  function stoneSelect() {
+    select = 'Stone';
+    color = vec3.fromValues(0.6, 0.6, 0.6);
+  }
+
   return null;
 }
