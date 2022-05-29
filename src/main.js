@@ -126,10 +126,6 @@ export function main() {
 
   function KeyEvent(keyCode) {
       switch (keyCode) {
-          case 69: //e
-              select = 'Lava';
-              color = vec3.fromValues(1.0, 0.6, 0.0);
-              break;
           case 81: //q
               select = 'Particle';
               color = vec3.fromValues(0.9, 0.9, 0.7);
@@ -138,9 +134,17 @@ export function main() {
               select = 'Water';
               color = vec3.fromValues(0.1, 0.5, 1.0);
               break;
-          case 82: //r
+          case 69: //e
+              select = 'Lava';
+              color = vec3.fromValues(1.0, 0.6, 0.0);
+              break;
+          case 65: //a
               select = 'Steam';
               color = vec3.fromValues(0.7, 0.7, 0.7);
+              break;
+          case 83: //s
+              select = 'Stone';
+              color = vec3.fromValues(0.6, 0.6, 0.6);
               break;
       }
   }
