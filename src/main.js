@@ -71,7 +71,7 @@ export function main() {
 
     draw();
 
-    gm.update(deltaTime, particles);
+    gm.update(deltaTime, particles, avgDt);
 
     gm.render(deltaTime, particles);
 
