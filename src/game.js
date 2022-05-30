@@ -15,24 +15,20 @@ export class Game {
         for (var x = 0; x <= window.width; x += window.particleSize) {
             particles.set(x * 1000, {
                 x: x, y: 0, type: 'Border',
-                color: vec4.fromValues(0.4, 0.4, 0.4, 1.0),
                 matrix: false, lastMove: 0
             });
             particles.set(x * 1000 + window.height, {
                 x: x, y: window.height, type: 'Border',
-                color: vec4.fromValues(0.4, 0.4, 0.4, 1.0),
                 matrix: false, lastMove: 0
             });
         }
         for (var y = 0; y <= window.height; y += window.particleSize) {
             particles.set(y, {
                 x: 0, y: y, type: 'Border',
-                color: vec4.fromValues(0.4, 0.4, 0.4, 1.0),
                 matrix: false, lastMove: 0
             });
             particles.set(window.width * 1000 + y, {
                 x: window.width, y: y, type: 'Border',
-                color: vec4.fromValues(0.4, 0.4, 0.4, 1.0),
                 matrix: false, lastMove: 0
             });
         }
@@ -48,7 +44,7 @@ export class Game {
                     case 'Border': // border
                         break;
 
-                    case 'Particle': // particle
+                    case 'Sand': // particle
                         pdy = window.particleSize;
                         break;
 
@@ -104,7 +100,6 @@ export class Game {
                                 x: value.x + dx,
                                 y: value.y + dy,
                                 type: value.type,
-                                color: value.color,
                                 matrix: false,
                                 lastMove: 0
                             });
@@ -118,21 +113,19 @@ export class Game {
                     var aboveType = (particles.has(key - window.particleSize)) ? particles.get(key - window.particleSize).type : false;
                     var rightType = (particles.has(key + (1000 * window.particleSize))) ? particles.get(key + (1000 * window.particleSize)).type : false;
                     var belowType = (particles.has(key + window.particleSize)) ? particles.get(key + window.particleSize).type : false;
-                    if (value.type == 'Particle') {
+                    if (value.type == 'Sand') {
                         if (belowType == 'Water') {
                             particles.set(key, {
                                 x: value.x,
                                 y: value.y,
                                 type: 'Water',
-                                color: vec4.fromValues(0.1, 0.5, 1.0, 1.0),
                                 matrix: false,
                                 lastMove: 0
                             });
                             particles.set(key + window.particleSize, {
                                 x: value.x,
                                 y: value.y + window.particleSize,
-                                type: 'Particle',
-                                color: vec4.fromValues(0.9, 0.9, 0.7, 1.0),
+                                type: 'Sand',
                                 matrix: false,
                                 lastMove: 0
                             });
@@ -149,7 +142,6 @@ export class Game {
                                     x: value.x,
                                     y: value.y,
                                     type: 'Lava',
-                                    color: vec4.fromValues(1.0, 0.6, 0.0, 1.0),
                                     matrix: false,
                                     lastMove: 0
                                 });
@@ -158,7 +150,6 @@ export class Game {
                                     x: value.x,
                                     y: value.y,
                                     type: 'Lava',
-                                    color: vec4.fromValues(1.0, 0.6, 0.0, 1.0),
                                     matrix: false,
                                     lastMove: 0
                                 });
@@ -166,7 +157,6 @@ export class Game {
                                     x: value.x,
                                     y: value.y + window.particleSize,
                                     type: 'Stone',
-                                    color: vec4.fromValues(0.6, 0.6, 0.6, 1.0),
                                     matrix: false,
                                     lastMove: 0
                                 });
@@ -178,7 +168,6 @@ export class Game {
                                 x: value.x,
                                 y: value.y,
                                 type: 'Water',
-                                color: vec4.fromValues(0.1, 0.5, 1.0, 1.0),
                                 matrix: false,
                                 lastMove: 0
                             });
@@ -194,7 +183,6 @@ export class Game {
                                 x: value.x,
                                 y: value.y,
                                 type: 'Steam',
-                                color: vec4.fromValues(0.7, 0.7, 0.7, 1.0),
                                 matrix: false,
                                 lastMove: 0
                             });
@@ -210,7 +198,6 @@ export class Game {
                                 x: value.x,
                                 y: value.y,
                                 type: 'Stone',
-                                color: vec4.fromValues(0.6, 0.6, 0.6, 1.0),
                                 matrix: false,
                                 lastMove: 0
                             });

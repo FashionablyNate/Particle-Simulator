@@ -1,4 +1,5 @@
 import { mat4, vec3 } from 'gl-matrix';
+import * as types from './types.json';
 
 export class SpriteRenderer {
 
@@ -70,6 +71,9 @@ export class SpriteRenderer {
 
     drawSprite(gl, shaderProgram, value, size) {
 
+        var colorArray = types['types'].filter(function(x){ return x.name == value.type})[0].color;
+        var color = vec3.fromValues(colorArray[0], colorArray[1], colorArray[2]);
+
         if (!value.matrix) {
             value.matrix = mat4.create();
             // Now move the drawing position a bit to where we want to
@@ -89,11 +93,11 @@ export class SpriteRenderer {
             value.matrix
         );
 
-        if (value.color[0] != this.lastColor[0] || value.color[1] != this.lastColor[1] ||
-            value.color[2] != this.lastColor[2]) {
+        if (color[0] != this.lastColor[0] || color[1] != this.lastColor[1] ||
+            color[2] != this.lastColor[2]) {
             gl.uniform3f(
                 this.colorUniform,
-                value.color[0], value.color[1], value.color[2]
+                color[0], color[1], color[2]
             );
         }
 
@@ -102,6 +106,6 @@ export class SpriteRenderer {
             const vertexCount = 4;
             gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
         }
-        this.lastColor = value.color;
+        this.lastColor = color;
     }
 }

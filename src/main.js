@@ -3,7 +3,8 @@ import * as sprRen from './spriteRenderer.js';
 import * as game from './game.js';
 import { vsSource, fsSource } from './shaderSource.js';
 import { vec3 } from 'gl-matrix';
-import { createElement } from 'react';
+import * as types from './types.json';
+
 
 //
 // Start here
@@ -22,7 +23,7 @@ export function main() {
     canvas = document.getElementById("glcanvas");
   }
 
-  var select = 'Particle';
+  var select = 'Sand';
   var color = vec3.fromValues(0.9, 0.9, 0.7);
 
   // const canvas = document.querySelector('glcanvas');
@@ -119,6 +120,10 @@ export function main() {
 
   function draw() {
     if (mouseIsDown) {
+      
+      var colorArray = types['types'].filter(function(x){ return x.name == select})[0].color;
+      color = vec3.fromValues(colorArray[0], colorArray[1], colorArray[2]);
+
       let hash = (xPos * 1000) + yPos;
       if (!particles.has(hash)) particles.set(hash, {
         x: xPos, y: yPos, type: select, color: color, matrix: false, lastMove: 0
@@ -131,24 +136,19 @@ export function main() {
   function KeyEvent(keyCode) {
       switch (keyCode) {
           case 81: //q
-              select = 'Particle';
-              color = vec3.fromValues(0.9, 0.9, 0.7);
+              select = 'Sand';
               break;
           case 87: //w
               select = 'Water';
-              color = vec3.fromValues(0.1, 0.5, 1.0);
               break;
           case 69: //e
               select = 'Lava';
-              color = vec3.fromValues(1.0, 0.6, 0.0);
               break;
           case 65: //a
               select = 'Steam';
-              color = vec3.fromValues(0.7, 0.7, 0.7);
               break;
           case 83: //s
               select = 'Stone';
-              color = vec3.fromValues(0.6, 0.6, 0.6);
               break;
       }
   }
@@ -160,32 +160,27 @@ export function main() {
 
   document.getElementById("sand-select").addEventListener("click", sandSelect);
   function sandSelect() {
-    select = 'Particle';
-    color = vec3.fromValues(0.9, 0.9, 0.7);
+    select = 'Sand';
   }
 
   document.getElementById("water-select").addEventListener("click", waterSelect);
   function waterSelect() {
     select = 'Water';
-    color = vec3.fromValues(0.1, 0.5, 1.0);
   }
 
   document.getElementById("lava-select").addEventListener("click", lavaSelect);
   function lavaSelect() {
     select = 'Lava';
-    color = vec3.fromValues(1.0, 0.6, 0.0);
   }
 
   document.getElementById("steam-select").addEventListener("click", steamSelect);
   function steamSelect() {
     select = 'Steam';
-    color = vec3.fromValues(0.7, 0.7, 0.7);
   }
 
   document.getElementById("stone-select").addEventListener("click", stoneSelect);
   function stoneSelect() {
     select = 'Stone';
-    color = vec3.fromValues(0.6, 0.6, 0.6);
   }
 
   return null;
