@@ -219,10 +219,16 @@ export class Game {
         let sp = this.sp;
         
         particles.forEach(function(value, key) {
-            sprRen.drawSprite(gl,
-                              sp,
-                              value,
-                              vec2.fromValues(window.particleSize, window.particleSize)); 
+            if (key != 999999) {
+                sprRen.drawSprite(gl,
+                                sp,
+                                value,
+                                vec2.fromValues(window.particleSize, window.particleSize));
+            }
         });
+        sprRen.drawSprite(gl,
+            sp,
+            particles.get(999999),
+            vec2.fromValues(window.particleSize, window.particleSize));
     }
 }

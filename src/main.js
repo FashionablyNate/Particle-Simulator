@@ -2,7 +2,7 @@ import * as resMan from './resourceManager.js';
 import * as sprRen from './spriteRenderer.js';
 import * as game from './game.js';
 import { vsSource, fsSource } from './shaderSource.js';
-import { vec3 } from 'gl-matrix';
+import { vec2, vec3 } from 'gl-matrix';
 import * as types from './types.json';
 
 
@@ -90,6 +90,12 @@ export function main() {
     
     document.getElementById('SelectionDisplay4')
             .innerHTML = ' ' + speed.toPrecision(1);
+
+    document.getElementById('SelectionDisplay5')
+            .innerHTML = ' ' + xPos;
+
+    document.getElementById('SelectionDisplay6')
+            .innerHTML = ' ' + yPos;
     
     requestAnimationFrame(renderLoop);
   }
@@ -120,15 +126,16 @@ export function main() {
 
   function draw() {
     if (mouseIsDown) {
-      
-      var colorArray = types['types'].filter(function(x){ return x.name == select})[0].color;
-      color = vec3.fromValues(colorArray[0], colorArray[1], colorArray[2]);
 
       let hash = (xPos * 1000) + yPos;
       if (!particles.has(hash)) particles.set(hash, {
-        x: xPos, y: yPos, type: select, color: color, matrix: false, lastMove: 0
+        x: xPos, y: yPos, type: select, matrix: false, lastMove: 0
       });
+
     }
+    particles.set(999999, {
+      x: xPos, y: yPos, type: 'Pointer', matrix: false, lastMove: 0
+    });
   }
 
   window.addEventListener("keydown", onKeyDown, false);

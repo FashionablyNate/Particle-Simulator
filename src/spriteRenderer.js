@@ -25,6 +25,12 @@ export class SpriteRenderer {
            -1.0,  1.0,
             1.0, -1.0,
            -1.0, -1.0,
+            1.0,  1.0,
+            1.0, -1.0,
+           -1.0,  1.0,
+           -1.0, -1.0,
+           -1.0, -1.0,
+            1.0, -1.0
         ];
 
         // Create a buffer for the square's positions.
@@ -103,8 +109,12 @@ export class SpriteRenderer {
 
         {
             const offset = 0;
-            const vertexCount = 4;
-            gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
+            const vertexCount = 10;
+            if (value.type == 'Pointer') {
+                gl.drawArrays(gl.LINES, offset, vertexCount);
+            } else {
+                gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
+            }
         }
         this.lastColor = color;
     }
