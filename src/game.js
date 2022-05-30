@@ -1,5 +1,6 @@
 import { adjustVelocity } from './collision.js';
 import { vec2 } from 'gl-matrix';
+import * as types from './types.json';
 
 export class Game {
 
@@ -114,24 +115,29 @@ export class Game {
                     var aboveType = (particles.has(key - window.particleSize)) ? particles.get(key - window.particleSize).type : false;
                     var rightType = (particles.has(key + (1000 * window.particleSize))) ? particles.get(key + (1000 * window.particleSize)).type : false;
                     var belowType = (particles.has(key + window.particleSize)) ? particles.get(key + window.particleSize).type : false;
-                    if (value.type === 'Sand') {
-                        if (belowType === 'Water') {
+
+                    var typeData = types['types'].filter(function(x){ return x.name === value.type})[0];
+                    if (belowType && value.type !== 'Border') {
+                        var belowTypeData = types['types'].filter(function(x){ return x.name === belowType})[0];
+
+                        if (belowTypeData.density < typeData.density) {
                             particles.set(key, {
                                 x: value.x,
                                 y: value.y,
-                                type: 'Water',
+                                type: belowType,
                                 matrix: false,
                                 lastMove: 0
                             });
                             particles.set(key + window.particleSize, {
                                 x: value.x,
                                 y: value.y + window.particleSize,
-                                type: 'Sand',
+                                type: value.type,
                                 matrix: false,
                                 lastMove: 0
                             });
                         }
-                    } else if (value.type === 'Stone') {
+                    }
+                    if (value.type === 'Stone') {
                         if (
                             leftType === 'Lava' ||
                             aboveType === 'Lava' ||
@@ -143,21 +149,6 @@ export class Game {
                                     x: value.x,
                                     y: value.y,
                                     type: 'Lava',
-                                    matrix: false,
-                                    lastMove: 0
-                                });
-                            } else if (belowType === 'Lava') {
-                                particles.set(key, {
-                                    x: value.x,
-                                    y: value.y,
-                                    type: 'Lava',
-                                    matrix: false,
-                                    lastMove: 0
-                                });
-                                particles.set(key + window.particleSize, {
-                                    x: value.x,
-                                    y: value.y + window.particleSize,
-                                    type: 'Stone',
                                     matrix: false,
                                     lastMove: 0
                                 });
