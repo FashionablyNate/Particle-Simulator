@@ -23,6 +23,11 @@ export function main() {
     canvas = document.getElementById("glcanvas");
   }
 
+  const div = document.getElementById("div1")
+
+  canvas.width = Math.floor(div.clientWidth) - (Math.floor(div.clientWidth) % 5)
+  canvas.height = Math.floor(div.clientHeight * 2.5) - (Math.floor(div.clientHeight * 2.5) % 5)
+
   var select = 'Sand';
   var size = 1;
 
@@ -76,11 +81,11 @@ export function main() {
 
     gm.render(deltaTime, particles);
 
-    document.getElementById('SelectionDisplay1')
-            .innerHTML = ' ' + (particles.size);
-
     var fpsRatio = window.targetFPS / (1 / deltaTime);
     var speed = (fpsRatio == 0) ? 1 : fpsRatio;
+
+    document.getElementById('SelectionDisplay1')
+            .innerHTML = ' ' + (particles.size);
 
     document.getElementById('SelectionDisplay2')
             .innerHTML = ' ' + Math.floor(1 / avgDt);
@@ -123,6 +128,47 @@ export function main() {
   canvas.onmouseup = function() {
       mouseIsDown = false;
   }
+
+  // Set up touch events for mobile, etc
+  canvas.addEventListener("touchstart", function (event) {
+    mouseIsDown = true;
+    var touch = event.touches[0];
+    coord.x = touch.pageX - canvas.offsetLeft;
+    coord.y = touch.pageY - canvas.offsetTop;
+    console.log(coord.x + " " + coord.y);
+  }, false);
+  
+  canvas.addEventListener("touchend", function (e) {
+    mouseIsDown = false;
+  }, false);
+  
+  canvas.addEventListener("touchmove", function (event) {
+    var touch = event.touches[0];
+    xPos = touch.pageX - canvas.offsetLeft;
+    yPos = touch.pageY - canvas.offsetTop;
+    xPos -= xPos % window.particleSize; yPos -= yPos % window.particleSize;
+    xPos = Math.floor(xPos); yPos = Math.floor(yPos);
+    draw();
+  }, false);
+
+  // Prevent scrolling when touching the canvas
+  canvas.addEventListener("touchstart", function (e) {
+    if (e.target == canvas) {
+      e.preventDefault();
+    }
+  }, false);
+
+  canvas.addEventListener("touchend", function (e) {
+    if (e.target == canvas) {
+      e.preventDefault();
+    }
+  }, false);
+  
+  canvas.addEventListener("touchmove", function (e) {
+    if (e.target == canvas) {
+      e.preventDefault();
+    }
+  }, false);
 
   function draw() {
     if (mouseIsDown) {
@@ -216,6 +262,7 @@ export function main() {
       var keyCode = event.keyCode;
       KeyEvent(keyCode);
   }
+
 
   document.getElementById("eraser").addEventListener("click", eraser);
   function eraser() {
