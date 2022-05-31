@@ -13,24 +13,24 @@ export class Game {
     }
 
     init(particles) {
-        for (var x = 0; x <= window.width; x += window.particleSize) {
-            particles.set(x * 1000, {
-                x: x, y: 0, type: 'Border',
-                matrix: false, lastMove: 0
+        for (var x = window.particleSize; x <= window.width - window.particleSize; x += window.particleSize) {
+            particles.set(x * 1000 + window.particleSize, {
+                x: x, y: window.particleSize, type: 'Border',
+                matrix: false, lastMove: 0, size: 1
             });
-            particles.set(x * 1000 + window.height, {
-                x: x, y: window.height, type: 'Border',
-                matrix: false, lastMove: 0
+            particles.set(x * 1000 + window.height - window.particleSize, {
+                x: x, y: window.height - window.particleSize, type: 'Border',
+                matrix: false, lastMove: 0, size: 1
             });
         }
-        for (var y = 0; y <= window.height; y += window.particleSize) {
-            particles.set(y, {
-                x: 0, y: y, type: 'Border',
-                matrix: false, lastMove: 0
+        for (var y = window.particleSize; y <= window.height - window.particleSize; y += window.particleSize) {
+            particles.set((1000 * window.particleSize) + y, {
+                x: window.particleSize, y: y, type: 'Border',
+                matrix: false, lastMove: 0, size: 1
             });
-            particles.set(window.width * 1000 + y, {
-                x: window.width, y: y, type: 'Border',
-                matrix: false, lastMove: 0
+            particles.set(((window.width - window.particleSize) * 1000) + y, {
+                x: window.width -  window.particleSize, y: y, type: 'Border',
+                matrix: false, lastMove: 0, size: 1
             });
         }
     }
@@ -103,7 +103,8 @@ export class Game {
                                 y: value.y + dy,
                                 type: value.type,
                                 matrix: false,
-                                lastMove: 0
+                                lastMove: 0, 
+                                size: 1
                             });
                             stall.add(((value.x + dx) * 1000) + value.y + dy);
                             particles.delete(key);
@@ -126,14 +127,16 @@ export class Game {
                                 y: value.y,
                                 type: belowType,
                                 matrix: false,
-                                lastMove: 0
+                                lastMove: 0,
+                                size: 1
                             });
                             particles.set(key + window.particleSize, {
                                 x: value.x,
                                 y: value.y + window.particleSize,
                                 type: value.type,
                                 matrix: false,
-                                lastMove: 0
+                                lastMove: 0,
+                                size: 1
                             });
                         }
                     }
@@ -150,7 +153,8 @@ export class Game {
                                     y: value.y,
                                     type: 'Lava',
                                     matrix: false,
-                                    lastMove: 0
+                                    lastMove: 0,
+                                    size: 1
                                 });
                             }
                         }
@@ -161,7 +165,8 @@ export class Game {
                                 y: value.y,
                                 type: 'Water',
                                 matrix: false,
-                                lastMove: 0
+                                lastMove: 0,
+                                size: 1
                             });
                         }
                     } else if (value.type === 'Water') {
@@ -176,7 +181,8 @@ export class Game {
                                 y: value.y,
                                 type: 'Steam',
                                 matrix: false,
-                                lastMove: 0
+                                lastMove: 0,
+                                size: 1
                             });
                         }
                     } else if (value.type === 'Lava') {
@@ -191,7 +197,8 @@ export class Game {
                                 y: value.y,
                                 type: 'Stone',
                                 matrix: false,
-                                lastMove: 0
+                                lastMove: 0,
+                                size: 1
                             });
                         }
                     }

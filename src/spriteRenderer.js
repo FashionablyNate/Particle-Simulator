@@ -90,7 +90,7 @@ export class SpriteRenderer {
 
             mat4.scale(value.matrix,
                     value.matrix,
-                    vec3.fromValues(-0.5 * size[0], -0.5 * size[1], 0));
+                    vec3.fromValues(-0.5 * size[0] * value.size, -0.5 * size[1] * value.size, 0));
         }
 
         gl.uniformMatrix4fv(

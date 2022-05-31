@@ -7,8 +7,10 @@
         },
         {
             "name":     "Pointer",
-            "color":    [1.0, 0.0, 0.0],
-            "density":  10
+            "color":    [1.0, 0.0, 0.0]
+        },
+        {
+            "name":     "Erase"
         },
         {
             "name":     "Sand",

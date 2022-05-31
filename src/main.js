@@ -24,7 +24,7 @@ export function main() {
   }
 
   var select = 'Sand';
-  var color = vec3.fromValues(0.9, 0.9, 0.7);
+  var size = 1;
 
   // const canvas = document.querySelector('glcanvas');
   window.width = canvas.width;
@@ -77,7 +77,7 @@ export function main() {
     gm.render(deltaTime, particles);
 
     document.getElementById('SelectionDisplay1')
-            .innerHTML = ' ' + (particles.size - (2 * (window.width + window.height) / window.particleSize));
+            .innerHTML = ' ' + (particles.size);
 
     var fpsRatio = window.targetFPS / (1 / deltaTime);
     var speed = (fpsRatio == 0) ? 1 : fpsRatio;
@@ -89,7 +89,7 @@ export function main() {
             .innerHTML = ' ' + select;
     
     document.getElementById('SelectionDisplay4')
-            .innerHTML = ' ' + speed.toPrecision(1);
+            .innerHTML = ' ' + size;
 
     document.getElementById('SelectionDisplay5')
             .innerHTML = ' ' + xPos;
@@ -126,16 +126,54 @@ export function main() {
 
   function draw() {
     if (mouseIsDown) {
-
-      let hash = (xPos * 1000) + yPos;
-      if (!particles.has(hash)) particles.set(hash, {
-        x: xPos, y: yPos, type: select, matrix: false, lastMove: 0
-      });
-
+      var hash = (xPos * 1000) + yPos;
+      if (select !== 'Erase') {        
+        if (size == 1) {
+          if (!particles.has(hash)) particles.set(hash, {
+            x: xPos, y: yPos, type: select, matrix: false, lastMove: 0, size: 1
+          });
+        } else {
+          var offset = Math.ceil(size / 2) - 1;
+          offset *= window.particleSize;
+          for (var x = xPos - offset; x < xPos + (window.particleSize * size) - offset; x += window.particleSize) {
+            for (var y = yPos - offset; y < yPos + (window.particleSize * size) - offset; y += window.particleSize) {
+              hash = (x * 1000) + y;
+              if (
+                !particles.has(hash) &&
+                (hash < (window.width * 1000) + window.particleSize) &&
+                (hash > window.particleSize * 1000) &&
+                ((hash - (x * 1000)) < window.height - window.particleSize) &&
+                ((hash - (x * 1000)) > window.particleSize)
+              ) {
+                particles.set(hash, {
+                  x: x, y: y, type: select, matrix: false, lastMove: 0, size: 1
+                });
+              }
+            }
+          }
+        }
+      } else {
+        var offset = Math.ceil(size / 2) - 1;
+          offset *= window.particleSize;
+          for (var x = xPos - offset; x < xPos + (window.particleSize * size) - offset; x += window.particleSize) {
+            for (var y = yPos - offset; y < yPos + (window.particleSize * size) - offset; y += window.particleSize) {
+              hash = (x * 1000) + y;
+              if (particles.has(hash)) {
+                particles.delete(hash);
+              }
+            }
+          }
+      }
     }
-    particles.set(999999, {
-      x: xPos, y: yPos, type: 'Pointer', matrix: false, lastMove: 0
-    });
+    if (size % 2 == 0) {
+      particles.set(999999, {
+        x: xPos + (window.particleSize - 2), y: yPos + (window.particleSize - 2), type: 'Pointer', matrix: false, lastMove: 0, size: size
+      });
+    } else {
+      particles.set(999999, {
+        x: xPos, y: yPos, type: 'Pointer', matrix: false, lastMove: 0, size: size
+      });
+    }
   }
 
   window.addEventListener("keydown", onKeyDown, false);
@@ -157,12 +195,43 @@ export function main() {
           case 83: //s
               select = 'Stone';
               break;
+          case 68: //d
+              select = 'Border';
+              break;
+          case 88: //x
+              select = 'Erase';
+              break;
+          case 49: //1
+              if (size > 1) {
+                size -= 1;
+              }
+              break;
+          case 50: //2
+              size += 1;
+              break;
       }
   }
 
   function onKeyDown(event) {
       var keyCode = event.keyCode;
       KeyEvent(keyCode);
+  }
+
+  document.getElementById("eraser").addEventListener("click", eraser);
+  function eraser() {
+    select = 'Erase';
+  }
+
+  document.getElementById("brush-decrease").addEventListener("click", brushDecrease);
+  function brushDecrease() {
+    if (size > 1) {
+      size -= 1;
+    }
+  }
+
+  document.getElementById("brush-increase").addEventListener("click", brushIncrease);
+  function brushIncrease() {
+    size += 1;
   }
 
   document.getElementById("sand-select").addEventListener("click", sandSelect);
@@ -188,6 +257,11 @@ export function main() {
   document.getElementById("stone-select").addEventListener("click", stoneSelect);
   function stoneSelect() {
     select = 'Stone';
+  }
+
+  document.getElementById("border-select").addEventListener("click", borderSelect);
+  function borderSelect() {
+    select = 'Border';
   }
 
   return null;
