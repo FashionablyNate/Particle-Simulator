@@ -86,6 +86,10 @@ export class Game {
                         break;
 
                     case 'Fire':
+                        rand = Math.floor(Math.random() * 8);
+                        if (rand === 7) pdx = window.particleSize;
+                        else if (rand === 0) pdx = -1 * window.particleSize;
+                        else pdx = 0;
                         pdy = -1 * window.particleSize;
                         break;
 
@@ -149,7 +153,7 @@ export class Game {
                             rightType === 'Fire' ||
                             belowType === 'Fire'
                         ) {
-                            if (Math.floor(Math.random() * 30) === 29) {
+                            if (Math.floor(Math.random() * 5) === 4) {
                                 particles.set(key, {
                                     x: value.x,
                                     y: value.y,
