@@ -111,7 +111,7 @@ export class Game {
 
                 var dx = (pdx !== 0) ? adjustVelocity(dx, pdx, particles, key, true) : 0;
                 var dy = (pdy !== 0) ? adjustVelocity(dy, pdy, particles, key, false) : 0;
-                if (value.timeAlive > 20 && value.type === 'Fire') {
+                if (value.timeAlive > 40 && value.type === 'Fire') {
                     particles.delete(key);
                 }
                 if (dy !== 0 || dx !== 0) {

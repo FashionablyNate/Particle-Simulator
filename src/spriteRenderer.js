@@ -106,7 +106,7 @@ export class SpriteRenderer {
         );
 
         if (value.type === "Fire") {
-            opacity = (20 - value.timeAlive) / 20
+            opacity = (40 - value.timeAlive) / 40
         }
 
         if (color[0] != this.lastColor[0] || color[1] != this.lastColor[1] ||
