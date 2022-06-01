@@ -26,7 +26,7 @@ export function main() {
   const div = document.getElementById("div1")
 
   canvas.width = Math.floor(div.clientWidth) - (Math.floor(div.clientWidth) % 5)
-  canvas.height = Math.floor(div.clientHeight * 2.5) - (Math.floor(div.clientHeight * 2.5) % 5)
+  canvas.height = Math.floor(window.innerHeight * 0.6) - (Math.floor(window.innerHeight * 0.6) % 5)
 
   var select = 'Sand';
   var size = 1;
@@ -176,7 +176,7 @@ export function main() {
       if (select !== 'Erase') {        
         if (size == 1) {
           if (!particles.has(hash)) particles.set(hash, {
-            x: xPos, y: yPos, type: select, matrix: false, lastMove: 0, size: 1
+            x: xPos, y: yPos, type: select, matrix: false, lastMove: 0, size: 1, timeAlive: 0
           });
         } else {
           var offset = Math.ceil(size / 2) - 1;
@@ -192,7 +192,7 @@ export function main() {
                 ((hash - (x * 1000)) > window.particleSize)
               ) {
                 particles.set(hash, {
-                  x: x, y: y, type: select, matrix: false, lastMove: 0, size: 1
+                  x: x, y: y, type: select, matrix: false, lastMove: 0, size: 1, timeAlive: 0
                 });
               }
             }
@@ -235,6 +235,9 @@ export function main() {
           case 69: //e
               select = 'Lava';
               break;
+          case 82: //r
+              select = 'Seed';
+              break;
           case 65: //a
               select = 'Steam';
               break;
@@ -243,6 +246,9 @@ export function main() {
               break;
           case 68: //d
               select = 'Border';
+              break;
+          case 70: //f
+              select = 'Fire';
               break;
           case 88: //x
               select = 'Erase';
@@ -296,6 +302,11 @@ export function main() {
     select = 'Lava';
   }
 
+  document.getElementById("seed-select").addEventListener("click", seedSelect);
+  function seedSelect() {
+    select = 'Seed';
+  }
+
   document.getElementById("steam-select").addEventListener("click", steamSelect);
   function steamSelect() {
     select = 'Steam';
@@ -309,6 +320,11 @@ export function main() {
   document.getElementById("border-select").addEventListener("click", borderSelect);
   function borderSelect() {
     select = 'Border';
+  }
+
+  document.getElementById("fire-select").addEventListener("click", fireSelect);
+  function fireSelect() {
+    select = 'Fire';
   }
 
   return null;

@@ -1,4 +1,5 @@
 import { mat4, vec3 } from 'gl-matrix';
+import ParticleSimulator from '../../pages/particle-simulator';
 import * as types from './types.json';
 
 export class SpriteRenderer {
@@ -15,6 +16,7 @@ export class SpriteRenderer {
         this.colorUniform = gl.getUniformLocation(this.program.program, 'spriteColor')
 
         this.lastColor = vec3.fromValues(0.0, 0.0, 0.0);
+        this.lastOpacity = 0.0;
     }
 
     initBufferData(gl, shaderProgram) {
@@ -35,6 +37,9 @@ export class SpriteRenderer {
 
         // Create a buffer for the square's positions.
         const positionBuffer = gl.createBuffer();
+
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
         // Select the positionBuffer as the one to apply buffer
         // operations to from here out.
@@ -79,6 +84,7 @@ export class SpriteRenderer {
 
         var colorArray = types['types'].filter(function(x){ return x.name == value.type})[0].color;
         var color = vec3.fromValues(colorArray[0], colorArray[1], colorArray[2]);
+        var opacity = 1.0;
 
         if (!value.matrix) {
             value.matrix = mat4.create();
@@ -99,11 +105,16 @@ export class SpriteRenderer {
             value.matrix
         );
 
+        if (value.type === "Fire") {
+            opacity = (20 - value.timeAlive) / 20
+        }
+
         if (color[0] != this.lastColor[0] || color[1] != this.lastColor[1] ||
-            color[2] != this.lastColor[2]) {
-            gl.uniform3f(
+            color[2] != this.lastColor[2] || opacity != this.lastOpacity
+            ) {
+            gl.uniform4f(
                 this.colorUniform,
-                color[0], color[1], color[2]
+                color[0], color[1], color[2], opacity
             );
         }
 
@@ -117,5 +128,7 @@ export class SpriteRenderer {
             }
         }
         this.lastColor = color;
+        this.lastOpacity = opacity;
+        value.timeAlive = value.timeAlive += 1;
     }
 }

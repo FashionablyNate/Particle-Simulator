@@ -16,21 +16,25 @@ export class Game {
         for (var x = window.particleSize; x <= window.width - window.particleSize; x += window.particleSize) {
             particles.set(x * 1000 + window.particleSize, {
                 x: x, y: window.particleSize, type: 'Border',
-                matrix: false, lastMove: 0, size: 1
+                matrix: false, lastMove: 0, size: 1,
+                timeAlive: 0
             });
             particles.set(x * 1000 + window.height - window.particleSize, {
                 x: x, y: window.height - window.particleSize, type: 'Border',
-                matrix: false, lastMove: 0, size: 1
+                matrix: false, lastMove: 0, size: 1,
+                timeAlive: 0
             });
         }
         for (var y = window.particleSize; y <= window.height - window.particleSize; y += window.particleSize) {
             particles.set((1000 * window.particleSize) + y, {
                 x: window.particleSize, y: y, type: 'Border',
-                matrix: false, lastMove: 0, size: 1
+                matrix: false, lastMove: 0, size: 1,
+                timeAlive: 0
             });
             particles.set(((window.width - window.particleSize) * 1000) + y, {
                 x: window.width -  window.particleSize, y: y, type: 'Border',
-                matrix: false, lastMove: 0, size: 1
+                matrix: false, lastMove: 0, size: 1,
+                timeAlive: 0
             });
         }
     }
@@ -49,10 +53,6 @@ export class Game {
                         pdy = window.particleSize;
                         break;
 
-                    case 'Stone':
-                        pdy = window.particleSize;
-                        break;
-
                     case 'Water': // water
                         rand = Math.floor(Math.random() * 5);
                         if (rand === 4) pdx = window.particleSize;
@@ -68,7 +68,15 @@ export class Game {
                         else pdx = 0;
                         pdy = window.particleSize;
                         break;
-                    
+
+                    case 'Seed':
+                        pdy = window.particleSize;
+                        break;
+
+                    case 'Grass':
+                        pdy = window.particleSize;
+                        break;
+
                     case 'Steam':
                         rand = Math.floor(Math.random() * 8);
                         if (rand === 7) pdx = window.particleSize;
@@ -76,6 +84,15 @@ export class Game {
                         else pdx = 0;
                         pdy = -1 * window.particleSize;
                         break;
+
+                    case 'Fire':
+                        pdy = -1 * window.particleSize;
+                        break;
+
+                    case 'Stone':
+                        pdy = window.particleSize;
+                        break;
+                    
                     default:
                 }
 
@@ -90,6 +107,9 @@ export class Game {
 
                 var dx = (pdx !== 0) ? adjustVelocity(dx, pdx, particles, key, true) : 0;
                 var dy = (pdy !== 0) ? adjustVelocity(dy, pdy, particles, key, false) : 0;
+                if (value.timeAlive > 20 && value.type === 'Fire') {
+                    particles.delete(key);
+                }
                 if (dy !== 0 || dx !== 0) {
                     if (
                         !particles.has(((value.x + dx) * 1000) + value.y + dy)
@@ -104,7 +124,8 @@ export class Game {
                                 type: value.type,
                                 matrix: false,
                                 lastMove: 0, 
-                                size: 1
+                                size: 1,
+                                timeAlive: value.timeAlive
                             });
                             stall.add(((value.x + dx) * 1000) + value.y + dy);
                             particles.delete(key);
@@ -118,6 +139,42 @@ export class Game {
                     var belowType = (particles.has(key + window.particleSize)) ? particles.get(key + window.particleSize).type : false;
 
                     var typeData = types['types'].filter(function(x){ return x.name === value.type})[0];
+
+                    if (typeData.flammable) {
+                        if (
+                            leftType === 'Lava' ||                            
+                            rightType === 'Lava' ||
+                            belowType === 'Lava' ||
+                            leftType === 'Fire' ||
+                            rightType === 'Fire' ||
+                            belowType === 'Fire'
+                        ) {
+                            if (Math.floor(Math.random() * 30) === 29) {
+                                particles.set(key, {
+                                    x: value.x,
+                                    y: value.y,
+                                    type: 'Fire',
+                                    matrix: false,
+                                    lastMove: 0,
+                                    size: 1,
+                                    timeAlive: 0
+                                });
+                            }
+                        } else if (
+                            aboveType === 'Lava' ||
+                            aboveType === 'Fire'
+                        ) {
+                            particles.set(key, {
+                                x: value.x,
+                                y: value.y,
+                                type: 'Fire',
+                                matrix: false,
+                                lastMove: 0,
+                                size: 1,
+                                timeAlive: 0
+                            });
+                        }
+                    }
                     if (belowType && value.type !== 'Border') {
                         var belowTypeData = types['types'].filter(function(x){ return x.name === belowType})[0];
 
@@ -128,7 +185,8 @@ export class Game {
                                 type: belowType,
                                 matrix: false,
                                 lastMove: 0,
-                                size: 1
+                                size: 1,
+                                timeAlive: 0
                             });
                             particles.set(key + window.particleSize, {
                                 x: value.x,
@@ -136,7 +194,8 @@ export class Game {
                                 type: value.type,
                                 matrix: false,
                                 lastMove: 0,
-                                size: 1
+                                size: 1,
+                                timeAlive: value.timeAlive
                             });
                         }
                     }
@@ -154,7 +213,8 @@ export class Game {
                                     type: 'Lava',
                                     matrix: false,
                                     lastMove: 0,
-                                    size: 1
+                                    size: 1,
+                                    timeAlive: value.timeAlive
                                 });
                             }
                         }
@@ -166,7 +226,8 @@ export class Game {
                                 type: 'Water',
                                 matrix: false,
                                 lastMove: 0,
-                                size: 1
+                                size: 1,
+                                timeAlive: value.timeAlive
                             });
                         }
                     } else if (value.type === 'Water') {
@@ -182,7 +243,8 @@ export class Game {
                                 type: 'Steam',
                                 matrix: false,
                                 lastMove: 0,
-                                size: 1
+                                size: 1,
+                                timeAlive: value.timeAlive
                             });
                         }
                     } else if (value.type === 'Lava') {
@@ -198,8 +260,27 @@ export class Game {
                                 type: 'Stone',
                                 matrix: false,
                                 lastMove: 0,
-                                size: 1
+                                size: 1,
+                                timeAlive: value.timeAlive
                             });
+                        }
+                    } else if (value.type === 'Seed') {
+                        if (belowType === 'Sand') {
+                            rand = Math.floor(Math.random() * 6);
+
+                            for (var i = 0; i < rand; i++) {
+                                particles.set(key - (window.particleSize * i), {
+                                    x: value.x,
+                                    y: value.y - (window.particleSize * i),
+                                    type: 'Grass',
+                                    matrix: false,
+                                    lastMove: 0,
+                                    size: 1,
+                                    timeAlive: value.timeAlive
+                                });
+                            }
+                        } else if (belowType === 'Grass') {
+                            particles.delete(key);
                         }
                     }
                     if (pdx !== 0 || pdy !== 0) {

@@ -14,10 +14,10 @@ export const fsSource =
 `
 precision mediump float;
 
-uniform vec3 spriteColor;
+uniform vec4 spriteColor;
 
 void main() {
-  gl_FragColor = vec4(spriteColor.x, spriteColor.y, spriteColor.z, 1.0);
+  gl_FragColor = vec4(spriteColor.x, spriteColor.y, spriteColor.z, spriteColor.w);
 }
 `
                         

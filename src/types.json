@@ -13,29 +13,52 @@
             "name":     "Erase"
         },
         {
-            "name":     "Sand",
-            "color":    [0.9, 0.9, 0.7],
-            "density":  5
+            "name":         "Sand",
+            "color":        [0.9, 0.9, 0.7],
+            "density":      5,
+            "flammable":    false
         },
         {
-            "name":     "Water",
-            "color":    [0.1, 0.5, 1.0],
-            "density":  3
+            "name":         "Water",
+            "color":        [0.1, 0.5, 1.0],
+            "density":      3,
+            "flammable":    false
         },
         {
-            "name":     "Lava",
-            "color":    [1.0, 0.6, 0.0],
-            "density":  3
+            "name":         "Lava",
+            "color":        [1.0, 0.6, 0.0],
+            "density":      3,
+            "flammable":    false
         },
         {
-            "name":     "Steam",
-            "color":    [0.7, 0.7, 0.7],
-            "density":  1
+            "name":         "Seed",
+            "color":        [0.6, 1.0, 0.4],
+            "density":      5,
+            "flammable":    true
         },
         {
-            "name":     "Stone",
-            "color":    [0.6, 0.6, 0.6],
-            "density":  5
+            "name":         "Grass",
+            "color":        [0.0, 1.0, 0.3],
+            "density":      5,
+            "flammable":    true
+        },
+        {
+            "name":         "Steam",
+            "color":        [0.7, 0.7, 0.7],
+            "density":      1,
+            "flammable":    false
+        },
+        {
+            "name":         "Stone",
+            "color":        [0.6, 0.6, 0.6],
+            "density":      5,
+            "flammable":    false
+        },
+        {
+            "name":         "Fire",
+            "color":        [1.0, 0.0, 0.0],
+            "density":      1,
+            "flammable":    false
         }
     ]
 }
